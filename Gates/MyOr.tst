@@ -1,5 +1,5 @@
-load MyAnd.hdl,
-output-file MyAnd.out,
+load MyOr.hdl,
+output-file MyOr.out,
 output-list a%B3.1.3 b%B3.1.3 out%B3.1.3;
 
 set a 0,
