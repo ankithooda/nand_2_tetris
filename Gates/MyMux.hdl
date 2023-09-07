@@ -1,0 +1,10 @@
+CHIP MyMux {
+    IN a, b, sel;
+    OUT out;
+
+    PARTS:
+    MyNot(in=sel, out=selnot);
+    MyAnd(a=a, b=selnot, out=w1);
+    MyAnd(a=b, b=sel, out=w2);
+    MyOr(a=w1, b=w2, out=out);
+}
