@@ -1,0 +1,10 @@
+CHIP Negate {
+    IN x[16], sel;
+    OUT out[16];
+
+    PARTS:
+    DMux16(in=x, sel=sel, a=w1, b=w2);
+    Not16(in=w2, out=w3);
+    Inc16(in=w3, out=w4);
+    Mux16(a=w1, b=w4, sel=sel, out=out);
+}
