@@ -43,9 +43,9 @@ CHIP ALU {
 
     PARTS:
 
-    Zero(in=x, sel=zx, out=x1);
+    SelectZero(in=x, sel=zx, out=x1);
     SelectNot(in=x1, sel=nx, out=x2);
-    Zero(in=y, sel=zy, out=y1);
+    SelectZero(in=y, sel=zy, out=y1);
     SelectNot(in=y1, sel=ny, out=y2);
 
     DMux16(in=x2, sel=f, a=andx, b=addx);

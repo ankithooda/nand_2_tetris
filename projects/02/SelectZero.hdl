@@ -1,4 +1,4 @@
-CHIP Zero {
+CHIP SelectZero {
     IN in[16], sel;
     OUT out[16];
 
