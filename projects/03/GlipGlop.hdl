@@ -1,0 +1,9 @@
+CHIP GlipGlop {
+    IN s, r;
+    OUT q, qn;
+
+    PARTS:
+    Nand(a=s, b=qnf, out=q, out=qf);
+    Nand(a=r, b=qf, out=qn, out=qnf);
+    CLOCKED s, r;
+}
