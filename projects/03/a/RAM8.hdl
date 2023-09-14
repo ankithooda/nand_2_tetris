@@ -16,4 +16,14 @@ CHIP RAM8 {
 
     PARTS:
     // Put your code here:
+    DMux(in=in, sel=address[2], a=w0, b=w1);
+
+    DMux(in=w0, sel=address[1], a=w00, b=w01);
+    DMux(in=w1, sel=address[1], a=w10, b=w11);
+
+    DMux(in=w00, sel=address[0], a=w000, b=w001);
+    DMux(in=w00, sel=address[0], a=w000, b=w001);
+    DMux(in=w00, sel=address[0], a=w000, b=w001);
+    DMux(in=w00, sel=address[0], a=w000, b=w001);
+    
 }
