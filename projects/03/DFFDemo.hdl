@@ -1,0 +1,8 @@
+CHIP DFFDemo {
+
+    IN  in;
+    OUT out;
+
+    BUILTIN DFF;
+    CLOCKED in;
+}
