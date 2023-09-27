@@ -23,17 +23,23 @@ D = M
 @END
 D;JEQ
 
-D = 0
-
 (LOOP)
+
+@R2
+D = M
+
 @R0
 D = D + M
-@R1
-M = M - 1
-@LOOP
-M - 1;JGT
+
 @R2
 M = D
+
+@R1
+M = M - 1
+D = M
+
+@LOOP
+D;JGT
 
 (END)
 @END
