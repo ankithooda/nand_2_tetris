@@ -47,26 +47,57 @@ D = M
 @FILLBLACK
 D;JNE
 
-@KBDCHECK
+
+@FILLWHITE
 D;JEQ
 
 (FILLBLACK)
+// Set Black
 @R2
 A = M
 M = -1
 
+// Increment Address
 @R2
 M = M + 1
 
+// Check Upper Bound
 @R2
 D = M
-
 @R1
 D = M - D
-
-@KBDCHECK
+@RESET
 D;JLE
 
-@FILLBLACK
+@KBDCHECK
+0;JMP
+
+(FILLWHITE)
+// Set Black
+@R2
+A = M
+M = 0
+
+// Increment Address
+@R2
+M = M - 1
+
+// Check Lower Bound
+@R2
+D = M
+@R0
+D = M - D
+@RESET
+D;JGE
+
+@KBDCHECK
+0;JMP
+
+(RESET)
+@SCREEN
+D = A
+@R2
+M = D
+@KBDCHECK
 0;JMP
 
