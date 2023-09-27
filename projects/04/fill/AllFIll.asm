@@ -1,10 +1,26 @@
 @SCREEN
-M = -1
-D = A + 1
+D = A
 
-@D
+@R0
+M = D
+
+(KBDCHECK)
+@KBD
+D = M
+
+@FILLCOLOR
+D;JNE
+
+@KBDCHECK
+0;JMP
+
+(FILLCOLOR)
+@R0
+A = M
 M = -1
 
-(END)
-@END
+@R0
+M = M + 1
+
+@KBDCHECK
 0;JMP

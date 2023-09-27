@@ -13,30 +13,60 @@
 
 // Put your code here.
 
+// Register Uses
+// R0 - Lower Bound of Screen Memory
+// R1 - Upper Bound of Screen Memory
+// R2 - Current Screen Memory address
+
+// Set Lower Bound
 @SCREEN
 D = A
-
 @R0
 M = D
 
-(LOOP)
+// Set Upper Bound
+@SCREEN
+D = A
+@8192
+D = D + A
+@R1
+M = D
+
+// Set Current
+@SCREEN
+D = A
+@R2
+M = D
+
+// Loop for Keyboard check
+(KBDCHECK)
+
 @KBD
 D = M
-@FILL
+
+@FILLBLACK
 D;JNE
-@LOOP
-0;JMP
 
-(FILL)
-@R0
-D = M
-@D
+@KBDCHECK
+D;JEQ
+
+(FILLBLACK)
+@R2
+A = M
 M = -1
-@R0
-M = D + 1
-@FILL
+
+@R2
+M = M + 1
+
+@R2
+D = M
+
+@R1
+D = M - D
+
+@KBDCHECK
+D;JLE
+
+@FILLBLACK
 0;JMP
 
-(END)
-@END
-0;JMP
