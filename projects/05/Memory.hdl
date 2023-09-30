@@ -30,9 +30,11 @@ CHIP Memory {
     DMux(in=load, sel=address[14], a=loadDMem, b=IOMem);
     DMux(in=IOMem, sel=address[13], a=loadScrMem, b=loadKBDMem);
     DMux(in=loadKBDMem, sel=address[0], a=loadKBDLocation, b=deadend);
-    Or(a=loadScrMem, b=loadKBDLocation, out=loadIMem);
 
-    Mux16(a=outDMem, b=outIMem, sel=address[14], out=out);
     RAM16K(in=in, load=loadDMem, address=address[0..13], out=outDMem);
-    RAM16K(in=in, load=loadIMem, address=address[0..13], out=outIMem);
+    Screen(in=in, load=loadScrMem, address=address[0..12], out=outScrMem);
+    Keyboard(out=outKBDMem);
+
+    Mux16(a=outScrMem, b=outKBDMem, sel=address[13], out=outIOMem);
+    Mux16(a=outDMem, b=outIOMem, sel=address[14], out=out);
 }

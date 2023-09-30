@@ -1,0 +1,10 @@
+CHIP KBDExp {
+
+    OUT out[16];   // The ASCII code of the pressed key, 
+                   // or 0 if no key is currently pressed, 
+                   // or one the special codes listed in Figure 5.5.
+
+    BUILTIN Keyboard;
+
+    
+}
