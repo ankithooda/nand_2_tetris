@@ -39,5 +39,37 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+
+    // D Register
+    DRegister(in=compD, load=instruction[4], out=outD);
+
+    // A Register
+    DRegister(in=compA, load=instruction[5], out=outA, out=pcA);
+
+    // Mux selecting between A-Instruction and C-Instruction
+    Mux16(a=compALU, b=instruction, sel=instruction[15], out=inA);
+
+    // Mux selecting between A and M registers for ALU input
+    Mux16(a=outA, b=inM, sel=instruction[12], out=secondReg);
+
+    // ALU
+    ALU(x=outD,
+        y=secondReg,
+        zx=instruction[11],
+        nx=instruction[10],
+        zy=instruction[9],
+        ny=instruction[8],
+        f=instruction[7],
+        no=instruction[6],
+        out=outM,
+        out=compD,
+        out=compA,
+        zr=zr,
+        ng=ng
+    );
+
+    // Program Counter
+    PC(in=pcA[0..14], load=false, inc=true, reset=reset, out=pc);
+
+    
 }
