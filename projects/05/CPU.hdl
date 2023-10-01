@@ -46,11 +46,11 @@ CHIP CPU {
     Or(a=aInstr, b=instruction[5], out=loadA);
     
     // A Register
-    DRegister(in=inA, load=loadA, out=outA, out=pcA);
+    DRegister(in=inA, load=loadA, out=outA, out=pcA, out=addressM);
 
     // Mux selecting between A-Instruction and C-Instruction
     Mux16(a=instruction, b=compALU, sel=instruction[15], out=inA);
-    
+
     // D Register
     DRegister(in=compD, load=instruction[4], out=outD);
 
@@ -72,6 +72,10 @@ CHIP CPU {
         zr=zr,
         ng=ng
     );
+
+    // Set writeM
+    Not(in=instruction[3], out=flipline);
+    Not(in=flipline, out=writeM);
 
     // Program Counter
     // PC(in=pcA[0..14], load=false, inc=true, reset=reset, out=pc);
