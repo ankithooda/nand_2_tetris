@@ -46,7 +46,7 @@ CHIP CPU {
     Or(a=aInstr, b=instruction[5], out=loadA);
     
     // A Register
-    DRegister(in=inA, load=loadA, out=outA, out=pcA, out=addressM);
+    DRegister(in=inA, load=loadA, out=outA, out=pcA, out[1..15]=addressM);
 
     // Mux selecting between A-Instruction and C-Instruction
     Mux16(a=instruction, b=compALU, sel=instruction[15], out=inA);
@@ -78,7 +78,15 @@ CHIP CPU {
     Not(in=flipline, out=writeM);
 
     // Program Counter
-    // PC(in=pcA[0..14], load=false, inc=true, reset=reset, out=pc);
+
+    // Logic for PC
+    // if all Jump bits are zero then we increment
+    // otherwise we load A register value.
+    Or(a=instruction[0], b=instruction[1], out=j1);
+    Or(a=j1, b=instruction[2], out=j2);
+    Not(in=j2, out=j3);
+    
+    PC(in=pcA, load=j2, inc=j3, reset=reset, out[0..14]=pc);
 
     
 }
