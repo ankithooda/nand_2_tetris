@@ -44,15 +44,15 @@ CHIP CPU {
     // A gets loaded when instruction[15] is 1 or instruction[5] is 1
     Not(in=instruction[15], out=aInstr);
     Or(a=aInstr, b=instruction[5], out=loadA);
-
-    // D Register
-    DRegister(in=inA, load=instruction[4], out=outD);
-
+    
     // A Register
     DRegister(in=inA, load=loadA, out=outA, out=pcA);
 
     // Mux selecting between A-Instruction and C-Instruction
     Mux16(a=instruction, b=compALU, sel=instruction[15], out=inA);
+    
+    // D Register
+    DRegister(in=compD, load=instruction[4], out=outD);
 
     // Mux selecting between A and M registers for ALU input
     Mux16(a=outA, b=inM, sel=instruction[12], out=secondReg);
