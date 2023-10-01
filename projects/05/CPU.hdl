@@ -40,14 +40,19 @@ CHIP CPU {
 
     PARTS:
 
+    // Load bit for A register.
+    // A gets loaded when instruction[15] is 1 or instruction[5] is 1
+    Not(in=instruction[15], out=aInstr);
+    Or(a=aInstr, b=instruction[5], out=loadA);
+
     // D Register
-    DRegister(in=compD, load=instruction[4], out=outD);
+    DRegister(in=inA, load=instruction[4], out=outD);
 
     // A Register
-    DRegister(in=compA, load=instruction[5], out=outA, out=pcA);
+    DRegister(in=inA, load=loadA, out=outA, out=pcA);
 
     // Mux selecting between A-Instruction and C-Instruction
-    Mux16(a=compALU, b=instruction, sel=instruction[15], out=inA);
+    Mux16(a=instruction, b=compALU, sel=instruction[15], out=inA);
 
     // Mux selecting between A and M registers for ALU input
     Mux16(a=outA, b=inM, sel=instruction[12], out=secondReg);
@@ -63,13 +68,13 @@ CHIP CPU {
         no=instruction[6],
         out=outM,
         out=compD,
-        out=compA,
+        out=compALU,
         zr=zr,
         ng=ng
     );
 
     // Program Counter
-    PC(in=pcA[0..14], load=false, inc=true, reset=reset, out=pc);
+    // PC(in=pcA[0..14], load=false, inc=true, reset=reset, out=pc);
 
     
 }
