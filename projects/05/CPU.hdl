@@ -119,9 +119,12 @@ CHIP CPU {
         in[7]=jle,
         out=jmpyes
     );
+
+    And(a=jmpyes, b=instruction[15], out=jmpvalid);
+
     
 
 
     
-    PC(in=pcA, load=jmpyes, inc=njmp, reset=reset, out[0..14]=pc);
+    PC(in=pcA, load=jmpvalid, inc=njmp, reset=reset, out[0..14]=pc);
 }
