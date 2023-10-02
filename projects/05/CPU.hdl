@@ -85,6 +85,32 @@ CHIP CPU {
     Or(a=instruction[0], b=instruction[1], out=j1);
     Or(a=j1, b=instruction[2], out=j2);
     Not(in=j2, out=j3);
+
+    // Logic for jjj
+
+    Not(in=zr, out=nzr, out=jne);
+    Not(in=ng, out=nng);
+
+    // JGT
+    And(a=nzr, b=nng, out=w1);
+    And(a=w1, b=instruction[0], out=jgt, out=jgt1);
+
+    // JEQ
+    And(a=zr, b=instruction[1], out=jeq, out=jeq1, out=jeq2);
+
+    // JGE
+    Or(a=jgt1, b=jeq1, out=jge);
+
+    // JLT
+    And(a=ng, b=instruction[2], out=jlt, out=jlt1);
+
+    // JLE
+    Or(a=jeq2, b=jlt1, out=jle);
+
+    // JNE
+    
+
+
     
     PC(in=pcA, load=j2, inc=j3, reset=reset, out[0..14]=pc);
 }
