@@ -46,7 +46,7 @@ CHIP CPU {
     Or(a=aInstr, b=instruction[5], out=loadA);
     
     // A Register
-    DRegister(in=inA, load=loadA, out=outA, out=pcA, out[1..15]=addressM);
+    DRegister(in=inA, load=loadA, out=outA, out=pcA, out[0..14]=addressM);
 
     // Mux selecting between A-Instruction and C-Instruction
     Mux16(a=instruction, b=compALU, sel=instruction[15], out=inA);
@@ -87,6 +87,4 @@ CHIP CPU {
     Not(in=j2, out=j3);
     
     PC(in=pcA, load=j2, inc=j3, reset=reset, out[0..14]=pc);
-
-    
 }
