@@ -120,11 +120,13 @@ CHIP CPU {
         out=jmpyes
     );
 
+    // Jump is only valid when it is C-instruction
     And(a=jmpyes, b=instruction[15], out=jmpvalid);
+    And(a=true, b=aInstr, out=incyes);
 
     
 
 
     
-    PC(in=pcA, load=jmpvalid, inc=njmp, reset=reset, out[0..14]=pc);
+    PC(in=pcA, load=jmpvalid, inc=incyes, reset=reset, out[0..14]=pc);
 }
