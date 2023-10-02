@@ -86,11 +86,6 @@ CHIP CPU {
     Or(a=instruction[0], b=instruction[1], out=j1);
     Or(a=j1, b=instruction[2], out=jmp);
     Not(in=jmp, out=njmp);
-
-
-    
-
-
     
     PC(in=pcA, load=jmpyes, inc=njmp, reset=reset, out[0..14]=pc);
 }
