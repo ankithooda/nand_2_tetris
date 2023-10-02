@@ -82,9 +82,10 @@ CHIP CPU {
     // Logic for PC
     // if all Jump bits are zero then we increment
     // otherwise we load A register value.
+
     Or(a=instruction[0], b=instruction[1], out=j1);
-    Or(a=j1, b=instruction[2], out=j2);
-    Not(in=j2, out=j3);
+    Or(a=j1, b=instruction[2], out=jmp);
+    Not(in=jmp, out=njmp);
 
     // Logic for jjj
 
@@ -107,10 +108,20 @@ CHIP CPU {
     // JLE
     Or(a=jeq2, b=jlt1, out=jle);
 
-    // JNE
+    Or8Way(
+        in[0]=false,
+        in[1]=jmp,
+        in[2]=jgt,
+        in[3]=jeq,
+        in[4]=jge,
+        in[5]=jlt,
+        in[6]=jne,
+        in[7]=jle,
+        out=jmpyes,
+    )
     
 
 
     
-    PC(in=pcA, load=j2, inc=j3, reset=reset, out[0..14]=pc);
+    PC(in=pcA, load=jmpyes, inc=njmp, reset=reset, out[0..14]=pc);
 }
