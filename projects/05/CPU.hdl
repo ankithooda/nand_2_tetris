@@ -117,8 +117,8 @@ CHIP CPU {
         in[5]=jlt,
         in[6]=jne,
         in[7]=jle,
-        out=jmpyes,
-    )
+        out=jmpyes
+    );
     
 
 
