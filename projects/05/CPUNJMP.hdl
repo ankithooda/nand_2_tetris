@@ -87,5 +87,5 @@ CHIP CPUNJMP {
     Or(a=j1, b=instruction[2], out=jmp);
     Not(in=jmp, out=njmp);
     
-    PC(in=pcA, load=jmpyes, inc=njmp, reset=reset, out[0..14]=pc);
+    PC(in=pcA, load=jmp, inc=njmp, reset=reset, out[0..14]=pc);
 }
