@@ -43,13 +43,17 @@ CHIP CPU {
     // Load bit for A register.
     // A gets loaded when instruction[15] is 1 or instruction[5] is 1
     Not(in=instruction[15], out=aInstr);
+
+    // cInstr is equal to instruction[15]
+    Not(in=aInstr, out=cInstr);
+
     Or(a=aInstr, b=instruction[5], out=loadA);
     
     // A Register
     ARegister(in=inA, load=loadA, out=outA, out=pcA, out[0..14]=addressM);
 
     // Mux selecting between A-Instruction and C-Instruction
-    Mux16(a=instruction, b=compALU, sel=instruction[15], out=inA);
+    Mux16(a=instruction, b=compALU, sel=cInstr, out=inA);
 
     // D Register
     DRegister(in=compD, load=instruction[4], out=outD);
@@ -78,22 +82,16 @@ CHIP CPU {
     Not(in=flipline, out=wM);
 
     // Set writeM only when it is a C-Instruction
-    And(a=instruction[15], b=wM, out=writeM);
-
-    // Program Counter
-
-    // Logic for PC
-    // if all Jump bits are zero then we increment
-    // otherwise we load A register value.
-
-    And(a=instruction[0], b=instruction[1], out=j1);
-    And(a=j1, b=instruction[2], out=jmp);
-    Not(in=jmp, out=njmp);
+    And(a=cInstr, b=wM, out=writeM);
 
     // Logic for jjj
 
     Not(in=zr, out=nzr);
     Not(in=ng, out=nng);
+
+    // JMP
+    And(a=instruction[0], b=instruction[1], out=j1);
+    And(a=j1, b=instruction[2], out=jmp);    
 
     // JGT
     And(a=nzr, b=nng, out=w1);
@@ -128,13 +126,16 @@ CHIP CPU {
     );
 
     // Jump is only valid when it is C-instruction
-    And(a=jmpyes, b=instruction[15], out=jmpvalid);
+    // and some jmp condition is true.
+    And(a=jmpyes, b=cInstr, out=jmpvalid);
+
+    Not(in=jmpvalid, out=incyes);
 
     // Increment is only valid if it is jmpvalid is false and it is a C-Instr or 
     // it is a A-Instr
-    Not(in=jmpvalid, out=njmpvalid);
-    And(a=njmpvalid, b=instruction[15], out=inc-c);
-    Or(a=inc-c, b=aInstr, out=incyes);
+    // Not(in=jmpvalid, out=njmpvalid);
+    // And(a=njmpvalid, b=instruction[15], out=inc-c);
+    // Or(a=inc-c, b=aInstr, out=incyes);
     
     PC(in=pcA, load=jmpvalid, inc=incyes, reset=reset, out[0..14]=pc);
 }
