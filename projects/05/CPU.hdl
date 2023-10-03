@@ -113,7 +113,7 @@ CHIP CPU {
 
     // JNE
     And(a=instruction[0], b=instruction[2], out=checkjne);
-    And(a=checkjne, b=zr, out=jne);
+    And(a=checkjne, b=nzr, out=jne);
 
     Or8Way(
         in[0]=false,
