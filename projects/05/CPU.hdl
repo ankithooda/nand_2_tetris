@@ -86,8 +86,8 @@ CHIP CPU {
     // if all Jump bits are zero then we increment
     // otherwise we load A register value.
 
-    Or(a=instruction[0], b=instruction[1], out=j1);
-    Or(a=j1, b=instruction[2], out=jmp);
+    And(a=instruction[0], b=instruction[1], out=j1);
+    And(a=j1, b=instruction[2], out=jmp);
     Not(in=jmp, out=njmp);
 
     // Logic for jjj
