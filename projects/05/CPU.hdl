@@ -76,6 +76,8 @@ CHIP CPU {
     // Set writeM
     Not(in=instruction[3], out=flipline);
     Not(in=flipline, out=wM);
+
+    // Set writeM only when it is a C-Instruction
     And(a=instruction[15], b=wM, out=writeM);
 
     // Program Counter
@@ -90,7 +92,7 @@ CHIP CPU {
 
     // Logic for jjj
 
-    Not(in=zr, out=nzr, out=jne);
+    Not(in=zr, out=nzr);
     Not(in=ng, out=nng);
 
     // JGT
@@ -109,6 +111,10 @@ CHIP CPU {
     // JLE
     Or(a=jeq2, b=jlt1, out=jle);
 
+    // JNE
+    And(a=instruction[0], b=instruction[2], out=checkjne);
+    And(a=checkjne, b=zr, out=jne);
+
     Or8Way(
         in[0]=false,
         in[1]=jmp,
@@ -123,11 +129,12 @@ CHIP CPU {
 
     // Jump is only valid when it is C-instruction
     And(a=jmpyes, b=instruction[15], out=jmpvalid);
-    And(a=true, b=aInstr, out=incyes);
 
-    
-
-
+    // Increment is only valid if it is jmpvalid is false and it is a C-Instr or 
+    // it is a A-Instr
+    Not(in=jmpvalid, out=njmpvalid);
+    And(a=njmpvalid, b=instruction[15], out=inc-c);
+    Or(a=inc-c, b=aInstr, out=incyes);
     
     PC(in=pcA, load=jmpvalid, inc=incyes, reset=reset, out[0..14]=pc);
 }
