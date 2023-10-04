@@ -39,13 +39,13 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-
-    // Load bit for A register.
-    // A gets loaded when instruction[15] is 1 or instruction[5] is 1
     Not(in=instruction[15], out=aInstr);
 
     // cInstr is equal to instruction[15]
     Not(in=aInstr, out=cInstr);
+
+    // Load bit for A register.
+    // A gets loaded when instruction[15] is 1 or instruction[5] is 1    
 
     Or(a=aInstr, b=instruction[5], out=loadA);
     
@@ -56,10 +56,15 @@ CHIP CPU {
     Mux16(a=instruction, b=compALU, sel=cInstr, out=inA);
 
     // D Register
-    DRegister(in=compD, load=instruction[4], out=outD);
+    // D Register loading is only done when it is C-Instruction
+    // and instruction[4]
+    And(a=cInstr, b=instruction[4], out=loadD);
+    DRegister(in=compD, load=loadD, out=outD);
 
     // Mux selecting between A and M registers for ALU input
-    Mux16(a=outA, b=inM, sel=instruction[12], out=secondReg);
+    // Selection only required if it is a CInstr
+    And(a=cInstr, b=instruction[12], out=selAM);
+    Mux16(a=outA, b=inM, sel=selAM, out=secondReg);
 
     // ALU
     ALU(x=outD,
@@ -130,12 +135,6 @@ CHIP CPU {
     And(a=jmpyes, b=cInstr, out=jmpvalid);
 
     Not(in=jmpvalid, out=incyes);
-
-    // Increment is only valid if it is jmpvalid is false and it is a C-Instr or 
-    // it is a A-Instr
-    // Not(in=jmpvalid, out=njmpvalid);
-    // And(a=njmpvalid, b=instruction[15], out=inc-c);
-    // Or(a=inc-c, b=aInstr, out=incyes);
     
     PC(in=pcA, load=jmpvalid, inc=incyes, reset=reset, out[0..14]=pc);
 }

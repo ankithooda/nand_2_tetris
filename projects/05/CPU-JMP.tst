@@ -30,7 +30,7 @@ tick, tock;
 set instruction %B1110110000010000, // D=A
 tick, tock;
 
-set instruction %B0000000011111111, // @3
+set instruction %B0000000001111111, // @3
 tick, tock;
 
 set instruction %B1110010011000001, // D-A;JGT
@@ -52,7 +52,7 @@ tick, tock, output;
 
 // JGT - Should Not Jump
 
-set instruction %B0000000011111111, // @3
+set instruction %B0000000001111111, // @3
 tick, tock;
 
 set instruction %B1110110000010000, // D=A
