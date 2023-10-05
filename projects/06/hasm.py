@@ -41,6 +41,57 @@ class SymbolTable():
         """
         return self.table.get(symbol)
 
+COMP_MICROCODES = {
+    "0"     : "0101010",
+    "1"     : "0111111",
+    "-1"    : "0111010",
+    "D"     : "0001100",
+    "A"     : "0110000",
+    "!D"    : "0001101",
+    "!A"    : "0110001",
+    "-D"    : "0001111",
+    "-A"    : "0110011",
+    "D+1"   : "0011111",
+    "A+1"   : "0110111",
+    "D-1"   : "0001110",
+    "A-1"   : "0110010",
+    "D+A"   : "0000010",
+    "D-A"   : "0010011",
+    "A-D"   : "0000111",
+    "D&A"   : "0000000",
+    "D|A"   : "0010101",
+    "M"     : "1110000",
+    "!M"    : "1110001",
+    "-M"    : "1110011",
+    "M+1"   : "1110111",
+    "M-1"   : "1110010",
+    "D+M"   : "1000010",
+    "D-M"   : "1010011",
+    "M-D"   : "1000111",
+    "D&M"   : "1000000",
+    "D|M"   : "1010101"
+}
+
+DEST_MICROCODE = {
+    "M"   : "001",
+    "D"   : "010",
+    "DM"  : "011",
+    "A"   : "100",
+    "AM"  : "101",
+    "AD"  : "110",
+    "ADM" : "111"
+}
+
+JMP_MICROCODE = {
+    "JGT": "001",
+    "JEQ": "010",
+    "JGE": "011",
+    "JLT": "100",
+    "JNE": "101",
+    "JLE": "110",
+    "JMP": "111"
+}
+
 class Assembler():
     """Class for parsing and assembling HACK ASM files
     """
@@ -51,26 +102,50 @@ class Assembler():
         Args:
             path (string): file_path received from the user.
         """
-        self.path = sys.argv[1]
+        self.infile_path = path
+        self.outfile_path = "out.bin"
         self.infile_p = None
         self.outfile_p = None
 
     def _setup_infile(self):
-        pass
+        try:
+            self.infile_p = open(self.infile_path, mode='r', encoding='UTF-8')
+        except Exception as e:
+            sys.stderr.write(f"Could not read input file {self.infile_path}\n")
+            sys.stderr.write(f"Exception {e}\n")
+
 
     def _setup_outfile(self):
-        pass
+            self.outfile_p = open(self.outfile_path, mode='w', encoding='UTF-8')
 
-    def parse(self, line):
-        pass
+
+    def parse(self):
+        while True:
+            line = self.infile_p.readline()
+
+            if line is None:
+                sys.exit(0)
+            elif len(line) < 2:
+                continue
+            else:
+                self.parse_line(line.strip())
+
 
     def parse_line(self, line):
-        pass
+        print(line)
+        if line[0:2] == "//":
+            pass
+        elif line[0] == "@":
+            self.process_a_instruction(line)
+        else:
+            self.process_c_instruction(line)
 
     def process_a_instruction(self, line):
+        print("A")
         pass
 
     def process_c_instruction(self, line):
+        print("C")
         pass
 
 
