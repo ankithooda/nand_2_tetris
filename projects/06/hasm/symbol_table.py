@@ -1,5 +1,5 @@
 class SymbolTable():
-    """Class representing the Symbb
+    """Class representing the Symbol Table
     """
 
     def __init__(self):
