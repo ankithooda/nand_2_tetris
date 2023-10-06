@@ -36,3 +36,7 @@ class SymbolTable():
             integer: Address corresponding to the symbol.
         """
         return self.table.get(symbol)
+
+    def debug(self):
+        for k in self.table:
+            print(f"{k}->{self.table.get(k)}")
