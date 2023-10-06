@@ -1,11 +1,5 @@
-
 import unittest
 from symbol_table import SymbolTable
-
-# a = Assembler("./max/MaxL.asm")
-# a._setup_infile()
-# a._setup_outfile()
-# a.parse()
 
 
 class TestSymbolTableMethods(unittest.TestCase):

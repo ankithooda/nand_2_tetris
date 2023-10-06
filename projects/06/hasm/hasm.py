@@ -171,6 +171,7 @@ class Assembler():
         else:
             self.error_found = True
             sys.stderr.write(f"FATAL {self.line_num}: Unknown computation {comp}")
+            return None
 
         # Get microcode for destination
         if dest is None:
@@ -181,6 +182,7 @@ class Assembler():
             else:
                 self.error_found = True
                 sys.stderr.write(f"FATAL {self.line_num}: Unknown destination {dest}")
+                return None
 
         # Get microcode for jump bits
         if jjj is None:
@@ -191,3 +193,7 @@ class Assembler():
             else:
                 self.error_found = True
                 sys.stderr.write(f"FATAL {self.line_num}: Unknow jump instruction {jjj}")
+                return None
+        
+        return line_out
+
