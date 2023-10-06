@@ -135,10 +135,12 @@ class Assembler():
 
 
     def build_symbol_table(self):
-        """This is the first pass on the source code.
-        Builds symbol table.
-        Ignore comments and empty lines
         """
+        First Pass on the input file.
+        - Builds symbol table.
+        - Ignore comments and empty lines
+        """
+        self.infile_p.seek(0)
         unassigned_symbol = None
         address = 0
         for line in self.infile_p.readlines():
@@ -163,6 +165,7 @@ class Assembler():
         """Iterates over the input file and parses it line by line.
         Also writes the parsed machine code to the output file.
         """
+        self.infile_p.seek(0)
         for line in self.infile_p.readlines():
             self.line_num = self.line_num + 1
             machine_instruction = self.parse_line(line)
