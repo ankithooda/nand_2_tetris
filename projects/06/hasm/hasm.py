@@ -202,19 +202,19 @@ class Assembler():
         """Generates machine code of A-Instruction.
 
         Args:
-            line (str): The label or number in the A-Instruction.
+            line (str): A-Instruction.
         """
-        try:
-            line_out = f"{int(line[1:]):016b}"
-            return line_out
-        except ValueError:
-            self.error_found = True
-            sys.stderr.write(f"FATAL {self.line_num}: A-Instruction needs a 15-bit number {line}\n")
+        line = line[1:]
+        if line.isnumeric():
+            line = int(line)
+        elif self.sym_table.contains(line):
+            line = self.sym_table.get_address(line)
+        else:
+            sys.stderr.write(f"FATAL {self.line_num}: Uknown Symbol {line}")
             return None
-        except Exception:
-            self.error_found = True
-            sys.stderr.write(f"FATAL {self.line_num}: Unknown instruction {line}\n")
-            return None
+
+        line_out = f"{line:016b}"
+        return line_out
 
     def process_c_instruction(self, line):
         """Generates machine code of C-Instruction.
@@ -288,7 +288,7 @@ if __name__ == '__main__':
         assembler.setup_infile()
         assembler.seed_symbol_table()
         assembler.build_symbol_table()
-        assembler.sym_table.debug()
+        # assembler.sym_table.debug()
         assembler.parse()
         assembler.setup_outfile()
         assembler.write_outfile()
