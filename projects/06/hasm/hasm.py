@@ -2,45 +2,6 @@
 
 import sys
 
-class SymbolTable():
-    """Class representing the Symbb
-    """
-
-    def __init__(self):
-        self.table = {}
-
-    def add_entry(self, symbol, address):
-        """Add an entry into the symbol table. 
-        
-        Args:
-            symbol (string): symbol found in the assembly instruction.
-            address (integer): address
-        """
-        self.table[symbol] = address
-
-    def contains(self, symbol):
-        """Check whether the symbol table contains a given symbol or not.
-
-        Args:
-            symbol (string): Symbol to be checked.
-
-        Returns:
-            boolean: True/False based on whether symbol exists in table.
-        """
-        return self.table.get(symbol) is not None
-
-    def get_address(self, symbol):
-        """Get Address corresponding to the symbol.
-        Returns None if symbol does not exist.
-
-        Args:
-            symbol (string): Symbol
-
-        Returns:
-            integer: Address corresponding to the symbol.
-        """
-        return self.table.get(symbol)
-
 COMP_MICROCODES = {
     "0"     : "0101010",
     "1"     : "0111111",
@@ -106,6 +67,7 @@ class Assembler():
         self.outfile_path = "out.bin"
         self.infile_p = None
         self.outfile_p = None
+        self.line_num = 0
 
     def _setup_infile(self):
         try:
@@ -122,35 +84,69 @@ class Assembler():
     def parse(self):
         while True:
             line = self.infile_p.readline()
+            self.line_num = self.line_num + 1
 
             if line is None:
-                sys.exit(0)
+                break
             elif len(line) < 2:
                 continue
             else:
                 self.parse_line(line.strip())
+        sys.exit(0)
 
 
     def parse_line(self, line):
-        print(line)
         if line[0:2] == "//":
             pass
         elif line[0] == "@":
-            self.process_a_instruction(line)
+            self.process_a_instruction(line[1:0])
         else:
             self.process_c_instruction(line)
 
-    def process_a_instruction(self, line):
-        print("A")
-        pass
+    def process_a_instruction(self, num):
+        try:
+            outline = f"{int(num):016b}"
+            self.outfile_p
+        except ValueError as e:
+            sys.stderr.write(f"FATAL {self.line_num}: A-Instruction needs a 15-bit number {num}")
+        finally:
+            sys.stderr.write(f"FATAL {self.line_num}: Unknown instruction {line}")
 
     def process_c_instruction(self, line):
-		line = line.replace(" ", "").replace("\t", "")
+        line = line.replace(" ", "").replace("\t", "")
+        line_out = "111"
+        dest = None
+        comp = None
+        jjj = None
+
+        if line.find("=") != -1:
+            dest, line = line.split("=")
         
-		
-        print("C")
-        pass
+        if line.find(";") != -1:
+            comp, jjj = line.split(";")
+        
+        # Get microcode for comp
+        if COMP_MICROCODES.get(comp):
+            line_out = line_out + COMP_MICROCODES.get(comp)
+        else:
+            sys.stderr.write(f"FATAL {self.line_num}: Unknown computation {comp}")
 
+        # Get microcode for destination
+        if dest is None:
+            line_out = line_out + "000"
+        else:
+            if DEST_MICROCODE.get(dest):
+                line_out = line_out + DEST_MICROCODE.get(dest)
+            else:
+                sys.stderr.write(f"FATAL {self.line_num}: Unknown destination {dest}")
+        
+        # Get microcode for jump bits
+        if jjj is None:
+            line_out = line_out + "000"
+        else:
+            if JMP_MICROCODE.get(jjj):
+                line_out = line_out + JMP_MICROCODE.get(jjj)
+            else:
+                sys.stderr.write(f"FATAL {self.line_num}: Unknow jump instruction {jjj}")
 
-
-
+        print(line_out)
