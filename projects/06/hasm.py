@@ -145,6 +145,9 @@ class Assembler():
         pass
 
     def process_c_instruction(self, line):
+		line = line.replace(" ", "").replace("\t", "")
+        
+		
         print("C")
         pass
 
