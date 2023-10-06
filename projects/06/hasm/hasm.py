@@ -190,6 +190,7 @@ class Assembler():
         if dest is None:
             line_out = line_out + "000"
         else:
+            dest = ''.join(sorted(dest))
             if DEST_MICROCODE.get(dest):
                 line_out = line_out + DEST_MICROCODE.get(dest)
             else:
@@ -227,7 +228,7 @@ if __name__ == '__main__':
     else:
         assembler = Assembler(sys.argv[1], sys.argv[2])
         assembler.setup_infile()
-        assembler.setup_outfile()
         assembler.parse()
+        assembler.setup_outfile()
         assembler.write_outfile()
     sys.exit(0)
