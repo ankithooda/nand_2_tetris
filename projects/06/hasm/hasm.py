@@ -57,14 +57,14 @@ class Assembler():
     """Class for parsing and assembling HACK ASM files
     """
 
-    def __init__(self, path):
+    def __init__(self, infile, outfile):
         """Constructor for Assembler objects.
 
         Args:
             path (string): file_path received from the user.
         """
-        self.infile_path = path
-        self.outfile_path = "out.bin"
+        self.infile_path = infile
+        self.outfile_path = outfile
         self.infile_p = None
         self.outfile_p = None
         self.line_num = 0
@@ -107,7 +107,7 @@ class Assembler():
         """
         for line in self.infile_p.readlines():
             self.line_num = self.line_num + 1
-            machine_instruction = self.parse_line(line.strip())
+            machine_instruction = self.parse_line(line)
             if machine_instruction is not None:
                 self.machine_code.append(machine_instruction)
 
@@ -130,7 +130,10 @@ class Assembler():
         Returns:
             str: Machine code translation of the input line.
         """
-        if line[0:2] == "//":
+        line = line.strip()
+        if len(line) == 0:
+            return None
+        elif line[0:2] == "//":
             return None
         elif line[0] == "@":
             return self.process_a_instruction(line)
@@ -207,11 +210,24 @@ class Assembler():
 
         return line_out
 
+def print_help():
+    """Prints help message.
+    """
+    usage = '''
+    HACK Assembler
+    Usage:
+        hasm.py <input file> <output file>
+    '''
+    print(usage)
+
 
 if __name__ == '__main__':
-    assembler = Assembler(sys.argv[1])
-    assembler.setup_infile()
-    assembler.setup_outfile()
-    assembler.parse()
-    assembler.write_outfile()
+    if len(sys.argv) != 3:
+        print_help()
+    else:
+        assembler = Assembler(sys.argv[1], sys.argv[2])
+        assembler.setup_infile()
+        assembler.setup_outfile()
+        assembler.parse()
+        assembler.write_outfile()
     sys.exit(0)
