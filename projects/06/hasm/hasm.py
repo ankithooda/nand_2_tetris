@@ -68,51 +68,91 @@ class Assembler():
         self.infile_p = None
         self.outfile_p = None
         self.line_num = 0
+        self.error_found = False
 
     def _setup_infile(self):
+        """Opens the provided file and stores the file object in infile_p attribute.
+        """
         try:
             self.infile_p = open(self.infile_path, mode='r', encoding='UTF-8')
-        except Exception as e:
+        except Exception as any_exception:
             sys.stderr.write(f"Could not read input file {self.infile_path}\n")
-            sys.stderr.write(f"Exception {e}\n")
+            sys.stderr.write(f"Exception {any_exception}\n")
+            self._clean_up()
+            sys.exit(1)
 
 
     def _setup_outfile(self):
-            self.outfile_p = open(self.outfile_path, mode='w', encoding='UTF-8')
+        """Opens the output file in write and stores the file object in outfile_p
+        attribute.
+        """
+        self.outfile_p = open(self.outfile_path, mode='w', encoding='UTF-8')
 
+    def _clean_up(self):
+        """Closes input and output files, to be called before exiting.
+        """
+        self.infile_p.close()
+        self.outfile_p.close()
 
     def parse(self):
-        while True:
-            line = self.infile_p.readline()
+        """Iterates over the input file and parses it line by line.
+        Also writes the parsed machine code to the output file.
+        """
+        machine_code = []
+        for line in self.infile_p.readlines():
             self.line_num = self.line_num + 1
+            machine_instruction = self.parse_line(line.strip())
+            if machine_instruction is not None:
+                machine_code.append(machine_instruction)
 
-            if line is None:
-                break
-            elif len(line) < 2:
-                continue
-            else:
-                self.parse_line(line.strip())
+        # Write to output file only if no errors were found.
+        if self.error_found is False:
+            for code in machine_code:
+                self.outfile_p.write(code)
+
+        self._clean_up()
         sys.exit(0)
 
 
     def parse_line(self, line):
-        if line[0:2] == "//":
-            pass
-        elif line[0] == "@":
-            self.process_a_instruction(line[1:0])
-        else:
-            self.process_c_instruction(line)
+        """Each line in source code can be a comment, A-Instruction or C-Instruction.
+        This method identifies the line type and call appropirate method.
 
-    def process_a_instruction(self, num):
+        Args:
+            line (str): line from source code file.
+
+        Returns:
+            str: Machine code translation of the input line.
+        """
+        if line[0:2] == "//":
+            return None
+        elif line[0] == "@":
+            return self.process_a_instruction(line[1:0])
+        else:
+            return self.process_c_instruction(line)
+
+    def process_a_instruction(self, line):
+        """Generates machine code of A-Instruction.
+
+        Args:
+            line (str): The label or number in the A-Instruction.
+        """
         try:
-            outline = f"{int(num):016b}"
-            self.outfile_p
-        except ValueError as e:
-            sys.stderr.write(f"FATAL {self.line_num}: A-Instruction needs a 15-bit number {num}")
-        finally:
+            line_out = f"{int(line):016b}"
+            return line_out
+        except ValueError:
+            self.error_found = True
+            sys.stderr.write(f"FATAL {self.line_num}: A-Instruction needs a 15-bit number {line}")
+        except Exception:
+            self.error_found = True
             sys.stderr.write(f"FATAL {self.line_num}: Unknown instruction {line}")
 
     def process_c_instruction(self, line):
+        """Generates machine code of C-Instruction.
+
+        Args:
+            line (str): C-Instruction
+        """
         line = line.replace(" ", "").replace("\t", "")
         line_out = "111"
         dest = None
@@ -121,14 +161,15 @@ class Assembler():
 
         if line.find("=") != -1:
             dest, line = line.split("=")
-        
+
         if line.find(";") != -1:
             comp, jjj = line.split(";")
-        
+
         # Get microcode for comp
         if COMP_MICROCODES.get(comp):
             line_out = line_out + COMP_MICROCODES.get(comp)
         else:
+            self.error_found = True
             sys.stderr.write(f"FATAL {self.line_num}: Unknown computation {comp}")
 
         # Get microcode for destination
@@ -138,8 +179,9 @@ class Assembler():
             if DEST_MICROCODE.get(dest):
                 line_out = line_out + DEST_MICROCODE.get(dest)
             else:
+                self.error_found = True
                 sys.stderr.write(f"FATAL {self.line_num}: Unknown destination {dest}")
-        
+
         # Get microcode for jump bits
         if jjj is None:
             line_out = line_out + "000"
@@ -147,6 +189,5 @@ class Assembler():
             if JMP_MICROCODE.get(jjj):
                 line_out = line_out + JMP_MICROCODE.get(jjj)
             else:
+                self.error_found = True
                 sys.stderr.write(f"FATAL {self.line_num}: Unknow jump instruction {jjj}")
-
-        print(line_out)
