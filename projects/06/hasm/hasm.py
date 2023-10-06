@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+from symbol_table import SymbolTable
 
 COMP_MICROCODES = {
     "0"     : "0101010",
@@ -70,6 +71,7 @@ class Assembler():
         self.line_num = 0
         self.error_found = False
         self.machine_code = []
+        self.sym_table = SymbolTable()
 
     def setup_infile(self):
         """Opens the provided file and stores the file object in infile_p attribute.
@@ -100,6 +102,62 @@ class Assembler():
         """
         self.infile_p.close()
         self.outfile_p.close()
+
+    def seed_symbol_table(self):
+        """Seeds the symbol table with predefined symbol,
+        """
+        self.sym_table.add_entry("R0", 0)
+        self.sym_table.add_entry("R1", 1)
+        self.sym_table.add_entry("R2", 2)
+        self.sym_table.add_entry("R3", 3)
+        self.sym_table.add_entry("R4", 4)
+        self.sym_table.add_entry("R5", 5)
+        self.sym_table.add_entry("R6", 6)
+        self.sym_table.add_entry("R7", 7)
+        self.sym_table.add_entry("R8", 8)
+        self.sym_table.add_entry("R9", 9)
+        self.sym_table.add_entry("R10", 10)
+        self.sym_table.add_entry("R11", 11)
+        self.sym_table.add_entry("R12", 12)
+        self.sym_table.add_entry("R13", 13)
+        self.sym_table.add_entry("R14", 14)
+        self.sym_table.add_entry("R15", 15)
+
+        self.sym_table.add_entry("SP", 0)
+        self.sym_table.add_entry("LCL", 1)
+        self.sym_table.add_entry("ARG", 2)
+        self.sym_table.add_entry("THIS", 3)
+        self.sym_table.add_entry("THAT", 4)
+
+        self.sym_table.add_entry("SCREEN", 16384)
+        self.sym_table.add_entry("KBD", 24576)
+
+
+
+    def build_symbol_table(self):
+        """This is the first pass on the source code.
+        Builds symbol table.
+        Ignore comments and empty lines
+        """
+        unassigned_symbol = None
+        address = 0
+        for line in self.infile_p.readlines():
+            self.line_num = self.line_num + 1
+            line = line.strip()
+            # print(f"--{line}--")
+            if len(line) == 0 or line[0:2] == '//':
+                continue
+            elif line[0] == '(':
+                symbol = line[1:-1]
+                if unassigned_symbol is None:
+                    unassigned_symbol = symbol
+                else:
+                    sys.stderr.write(f"FATAL {self.line_num} : Can not have two symbol declarations on after another")
+            else:
+                if unassigned_symbol is not None:
+                    self.sym_table.add_entry(unassigned_symbol, address)
+                unassigned_symbol = None
+                address = address + 1
 
     def parse(self):
         """Iterates over the input file and parses it line by line.
@@ -228,6 +286,9 @@ if __name__ == '__main__':
     else:
         assembler = Assembler(sys.argv[1], sys.argv[2])
         assembler.setup_infile()
+        assembler.seed_symbol_table()
+        assembler.build_symbol_table()
+        assembler.sym_table.debug()
         assembler.parse()
         assembler.setup_outfile()
         assembler.write_outfile()
