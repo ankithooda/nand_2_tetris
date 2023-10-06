@@ -1,0 +1,4 @@
+@1
+ADM=M+1;JEQ
+D+1;JEQ
+A
