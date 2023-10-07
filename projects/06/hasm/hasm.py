@@ -72,6 +72,7 @@ class Assembler():
         self.error_found = False
         self.machine_code = []
         self.sym_table = SymbolTable()
+        self.variable_address = 16
 
     def setup_infile(self):
         """Opens the provided file and stores the file object in infile_p attribute.
@@ -145,7 +146,6 @@ class Assembler():
         for line in self.infile_p.readlines():
             self.line_num = self.line_num + 1
             line = line.strip()
-            # print(f"--{line}--")
             if len(line) == 0 or line[0:2] == '//':
                 continue
             elif line[0] == '(':
@@ -219,8 +219,11 @@ class Assembler():
         elif self.sym_table.contains(line):
             line = self.sym_table.get_address(line)
         else:
-            sys.stderr.write(f"FATAL {self.line_num}: Uknown Symbol {line}")
-            return None
+            # if line is neither numeric nor already in symbol table.
+            # it is to be considered a variable declaration
+            self.sym_table.add_entry(line, self.variable_address)
+            self.variable_address = self.variable_address + 1
+            line = self.sym_table.get_address(line)
 
         line_out = f"{line:016b}"
         return line_out
