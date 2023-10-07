@@ -101,8 +101,11 @@ class Assembler():
     def _clean_up(self):
         """Closes input and output files, to be called before exiting.
         """
-        self.infile_p.close()
-        self.outfile_p.close()
+        if self.infile_p is not None:
+            self.infile_p.close()
+        
+        if self.outfile_p is not None:
+            self.outfile_p.close()
 
     def seed_symbol_table(self):
         """Seeds the symbol table with predefined symbol,
@@ -141,6 +144,7 @@ class Assembler():
         """
         self.infile_p.seek(0)
         self.line_num = 0
+
         # This is a list because there can be multiple symbols
         # pointing to same address.
         unassigned_symbols = []
@@ -148,21 +152,31 @@ class Assembler():
         for line in self.infile_p.readlines():
             self.line_num = self.line_num + 1
             line = line.strip()
+
+            # Skip comments and empty lines
             if len(line) == 0 or line[0:2] == '//':
                 continue
+
+            # Collect unassigned symbols
             elif line[0] == '(':
                 symbol = line[1:-1]
                 unassigned_symbols.append(symbol)
+
+            # The first line we get which is not a
+            # symbol or empty line or comment is the address
+            # which will be assigned to the unassigned_symbols collected
+            # so far.
             else:
                 if len(unassigned_symbols) != 0:
                     for each_symbol in unassigned_symbols:
                         self.sym_table.add_entry(each_symbol, address)
+                
+                # Reset unassigned symbols and set next address
                 unassigned_symbols = []
                 address = address + 1
 
     def parse(self):
         """Iterates over the input file and parses it line by line.
-        Also writes the parsed machine code to the output file.
         """
         self.infile_p.seek(0)
         self.line_num = 0
@@ -173,11 +187,13 @@ class Assembler():
                 self.machine_code.append(machine_instruction)
 
     def write_outfile(self):
+        """Write to output file if there were no errors
+        """
         # Write to output file only if no errors were found.
         if self.error_found is False:
+            self.setup_outfile()
             for code in self.machine_code:
                 self.outfile_p.write(f"{code}\n")
-            
             self.outfile_p.flush()
         self._clean_up()
 
@@ -301,6 +317,5 @@ if __name__ == '__main__':
         assembler.seed_symbol_table()
         assembler.build_symbol_table()
         assembler.parse()
-        assembler.setup_outfile()
         assembler.write_outfile()
     sys.exit(0)
