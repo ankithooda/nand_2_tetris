@@ -23,9 +23,9 @@ class TestAssembler(unittest.TestCase):
         self.assertEqual(a.process_c_instruction(asm_code_4), "1110110000000000")
 
     def test_parse_line(self):
-        asm_code_1 = "@1"
+        asm_code_1 = "@1 // inline comment"
         asm_code_2 = "//comment"
-        asm_code_3 = "M;JLE"
+        asm_code_3 = "M;JLE // in line comment"
 
         a = Assembler(None, None)
         self.assertEqual(a.parse_line(asm_code_1), "0000000000000001")

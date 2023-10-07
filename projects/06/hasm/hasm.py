@@ -191,10 +191,14 @@ class Assembler():
         Returns:
             str: Machine code translation of the input line.
         """
+        # Strip comments
+        comment_start = line.find("//")
+
+        if comment_start != -1:
+            line = line[0:comment_start]
         line = line.strip()
+
         if len(line) == 0:
-            return None
-        elif line[0:2] == "//":
             return None
         elif line[0] == "@":
             return self.process_a_instruction(line)
