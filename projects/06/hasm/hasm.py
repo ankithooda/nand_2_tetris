@@ -95,7 +95,7 @@ class Assembler():
             sys.stderr.write(f"Could not open output file {self.infile_path}\n")
             sys.stderr.write(f"Exception {any_exception}\n")
             self._clean_up()
-            sys.exit(1)        
+            sys.exit(1)
 
     def _clean_up(self):
         """Closes input and output files, to be called before exiting.
@@ -132,8 +132,6 @@ class Assembler():
         self.sym_table.add_entry("SCREEN", 16384)
         self.sym_table.add_entry("KBD", 24576)
 
-
-
     def build_symbol_table(self):
         """
         First Pass on the input file.
@@ -141,6 +139,7 @@ class Assembler():
         - Ignore comments and empty lines
         """
         self.infile_p.seek(0)
+        self.line_num = 0
         unassigned_symbol = None
         address = 0
         for line in self.infile_p.readlines():
@@ -166,6 +165,7 @@ class Assembler():
         Also writes the parsed machine code to the output file.
         """
         self.infile_p.seek(0)
+        self.line_num = 0
         for line in self.infile_p.readlines():
             self.line_num = self.line_num + 1
             machine_instruction = self.parse_line(line)
@@ -199,6 +199,8 @@ class Assembler():
         line = line.strip()
 
         if len(line) == 0:
+            return None
+        elif line[0] == "(":
             return None
         elif line[0] == "@":
             return self.process_a_instruction(line)
