@@ -141,7 +141,9 @@ class Assembler():
         """
         self.infile_p.seek(0)
         self.line_num = 0
-        unassigned_symbol = None
+        # This is a list because there can be multiple symbols
+        # pointing to same address.
+        unassigned_symbols = []
         address = 0
         for line in self.infile_p.readlines():
             self.line_num = self.line_num + 1
@@ -150,14 +152,12 @@ class Assembler():
                 continue
             elif line[0] == '(':
                 symbol = line[1:-1]
-                if unassigned_symbol is None:
-                    unassigned_symbol = symbol
-                else:
-                    sys.stderr.write(f"FATAL {self.line_num} : Can not have two symbol declarations on after another")
+                unassigned_symbols.append(symbol)
             else:
-                if unassigned_symbol is not None:
-                    self.sym_table.add_entry(unassigned_symbol, address)
-                unassigned_symbol = None
+                if len(unassigned_symbols) != 0:
+                    for each_symbol in unassigned_symbols:
+                        self.sym_table.add_entry(each_symbol, address)
+                unassigned_symbols = []
                 address = address + 1
 
     def parse(self):
@@ -300,7 +300,6 @@ if __name__ == '__main__':
         assembler.setup_infile()
         assembler.seed_symbol_table()
         assembler.build_symbol_table()
-        # assembler.sym_table.debug()
         assembler.parse()
         assembler.setup_outfile()
         assembler.write_outfile()
