@@ -3,7 +3,7 @@
 import sys
 from symbol_table import SymbolTable
 
-COMP_MICROCODES = {
+COMP_MICROCODE = {
     "0"     : "0101010",
     "1"     : "0111111",
     "-1"    : "0111010",
@@ -98,6 +98,15 @@ class Assembler():
             self._clean_up()
             sys.exit(1)
 
+    def _reset_inputfile(self):
+        """
+        1. Resets the opened input file back to the first line.
+        2. Resets self.line_num to 0.
+        This method should be called before both passes of the assembler.
+        """
+        self.infile_p.seek(0)
+        self.line_num = 0
+
     def _clean_up(self):
         """Closes input and output files, to be called before exiting.
         """
@@ -139,11 +148,10 @@ class Assembler():
     def build_symbol_table(self):
         """
         First Pass on the input file.
-        - Builds symbol table.
-        - Ignore comments and empty lines
+        1. Handles only Symbol declarations for ex - (LOOP)
+        2. Ignore comments and empty lines
         """
-        self.infile_p.seek(0)
-        self.line_num = 0
+        self._reset_inputfile()
 
         # This is a list because there can be multiple symbols
         # pointing to same address.
@@ -178,8 +186,7 @@ class Assembler():
     def parse(self):
         """Iterates over the input file and parses it line by line.
         """
-        self.infile_p.seek(0)
-        self.line_num = 0
+        self._reset_inputfile()
         for line in self.infile_p.readlines():
             self.line_num = self.line_num + 1
             machine_instruction = self.parse_line(line)
@@ -207,11 +214,12 @@ class Assembler():
         Returns:
             str: Machine code translation of the input line.
         """
-        # Strip comments
+        # Remove inline comments
         comment_start = line.find("//")
 
         if comment_start != -1:
             line = line[0:comment_start]
+
         line = line.strip()
 
         if len(line) == 0:
@@ -258,15 +266,19 @@ class Assembler():
 
         if line.find("=") != -1:
             dest, line = line.split("=")
+            dest = dest.strip()
+            line = line.strip()
 
         if line.find(";") != -1:
             comp, jjj = line.split(";")
+            comp = comp.strip()
+            jjj = jjj.strip()
         else:
             comp = line
 
         # Get microcode for comp
-        if COMP_MICROCODES.get(comp):
-            line_out = line_out + COMP_MICROCODES.get(comp)
+        if COMP_MICROCODE.get(comp):
+            line_out = line_out + COMP_MICROCODE.get(comp)
         else:
             self.error_found = True
             sys.stderr.write(f"FATAL {self.line_num}: Unknown computation {comp}\n")
