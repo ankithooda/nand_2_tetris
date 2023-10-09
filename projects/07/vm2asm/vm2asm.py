@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+from asm_code import ASMCode
 
 class VM2ASM():
     """VM2ASM Class
@@ -21,6 +22,8 @@ class VM2ASM():
         self.outfile_p = None
         self.line_num = 0
         self.error_found = False
+        self.asm_code = ASMCode()
+        self.generated_code = []
 
 
     def setup_infile(self):
@@ -61,6 +64,64 @@ class VM2ASM():
         """
         if self.infile_p is not None:
             self.infile_p.close()
+            self.infile_p = None
 
         if self.outfile_p is not None:
             self.outfile_p.close()
+            self.outfile_p = None
+
+    def write_outfile(self):
+        """Write to output file if there were no errors
+        """
+        # Write to output file only if no errors were found.
+        if self.error_found is False:
+            self.setup_outfile()
+            for code in self.generated_code:
+                self.outfile_p.write(f"{code}\n")
+            self.outfile_p.flush()
+        self._clean_up()
+
+    def parse(self):
+        """Reads the input line by line and uses ASMCode module to
+        generate Assembly code.
+        """
+        self.setup_infile()
+        for line in self.infile_p.readlines():
+            self.line_num = self.line_num + 1
+            if len(line) == 0 or line[0:2] == "//":
+                continue
+            else:
+                tokens = line.split(" ")
+                command = tokens[0]
+                args = tokens[1:]
+                code = self.asm_code.generate(command, args)
+
+                if code is not None:
+                    self.generated_code.append(code)
+                else:
+                    self.error_found = True
+                    sys.stderr.write(f"Can not generated code for command {line}")
+
+
+def print_help():
+    """Prints help message.
+    """
+    help_message = '''
+    VM2ASM 
+    Generates ASM code for .vm file
+    Usage
+    ./vm2asm.py <input .vm file> <out .asm file>
+
+    '''
+    sys.stdout.write(help_message)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print_help()
+    else:
+        assembler = VM2ASM(sys.argv[1], sys.argv[2])
+        assembler.setup_infile()
+        assembler.parse()
+        assembler.write_outfile()
+    sys.exit(0)
