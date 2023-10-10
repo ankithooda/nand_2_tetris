@@ -1,0 +1,3 @@
+push constant 160
+push constant 120
+lt

@@ -2,6 +2,7 @@
 
 import sys
 from asm_code import ASMCode
+from asm_code import ASMCodeGenException
 
 class VM2ASM():
     """VM2ASM Class
@@ -95,14 +96,13 @@ class VM2ASM():
                 tokens = line.split(" ")
                 command = tokens[0]
                 args = tokens[1:]
-                code = self.asm_code.generate(command, args)
-                # sys.stdout.write(f"DEBUG - {code}")
-
-                if code is not None:
+                try:
+                    code = self.asm_code.generate(command, args)
+                    # sys.stdout.write(f"{code}\n")
                     self.generated_code.extend(code)
-                else:
+                except ASMCodeGenException as e:
                     self.error_found = True
-                    sys.stderr.write(f"Can not generated code for command {line}\n")
+                    sys.stderr.write(f"FATAL {self.line_num} : {e.message}")
 
 
 def print_help():

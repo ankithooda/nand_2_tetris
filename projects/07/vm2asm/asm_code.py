@@ -1,28 +1,32 @@
 import sys      # For stderr and stdout
 
-VM_COMMANDS = {
-    "push": "push",
-    "pop": "pop",
-    "add": "add",
-    "sub": "sub",
-    "neg": "neg",
-    "eq": "eq",
-    "gt": "gt",
-    "lt": "lt",
-    "and": "and",
-    "or": "or",
-    "not": "not"
+
+ARTITHMETIC_LOGICAL_2ARGS = {
+    "push", "pop", "add", "sub", "and", "or"
 }
 
-MEMORY_SEGMENTS = {
-    "constant": "constant"
-}
+ARTITHMETIC_LOGICAL_1ARG = {"gt", "lt", "eq"}
 
-REGISTERS = {
-    "A": "A",
-    "D": "D",
-    "M": "M"
-}
+PUSH_POP = {"push", "pop"}
+
+SEGMENTS = {"lcl", "args", "this", "that", "pointer", "temp", "constant", "static"}
+
+class ASMCodeGenException(Exception):
+    """Exception class for raising all sorts of error occurring during the 
+    translation process
+
+    Args:
+        Exception (class): Python base class for exception
+    """
+
+    def __init__(self, message):
+        """Constructor
+
+        Args:
+            message (str): error message.
+        """
+        self.message = message
+
 
 class ASMCode():
     """Class implementing the code generation logic.
@@ -39,15 +43,23 @@ class ASMCode():
             str: Assembly Code.
         """
 
-        if VM_COMMANDS.get(command) is not None:
-            if command == "push":
+        if command in ARTITHMETIC_LOGICAL_2ARGS:
+            return self.arithmetic_logical_2args(command)
+        elif command in ARTITHMETIC_LOGICAL_1ARG:
+            return self.arithmetic_logical_1_arg(command)
+        elif command in PUSH_POP:
+            if len(args) != 2:
+                raise ASMCodeGenException(f"{command} should have exactly 2 arguments")
+            elif args[0] not in SEGMENTS:
+                raise ASMCodeGenException(f"{args[0]} is not a valid memory segment")
+            elif not args[1].isnumeric():
+                raise ASMCodeGenException(f"{args[1]} is not a valid address")
+            elif command == "push":
                 return self.handle_push(args[0], args[1])
-            elif command == "add":
-                return self.add()
-            else:
-                sys.stderr.write(f"Unhandled command {command}\n")
+            elif command == "pop":
+                return self.handle_push(args[0], args[1])    
         else:
-            return None
+            raise ASMCodeGenException(f"Unknown command {command}")
 
     def handle_push(self, segment, address):
         """Generates code for push command.
@@ -64,9 +76,23 @@ class ASMCode():
             instructions = self.load_constant(address, "D")
             instructions.extend(self.push("D"))
             return instructions
-        else:
-            sys.stderr.write(f"Unsupported segment {segment}\n")
-            return None
+
+    def handle_pop(self, segment, address):
+        """Generates code for push command.
+        push command pushes the value stored in segment[address] in the stack.
+
+        Args:
+            segment (str): Memory segment.
+            address (address): Address within the memory segment.
+
+        Returns:
+            (list): List of ASM instructions.
+        """
+        if segment == "constant":
+            instructions = self.load_constant(address, "D")
+            instructions.extend(self.pop("D"))
+            return instructions
+
 
     def load_constant(self, constant_value, register):
         """Loads a constant value in Register.
@@ -77,6 +103,7 @@ class ASMCode():
         """
 
         instructions = [
+            "// LOAD CONSTANT",
             f"@{constant_value}",
             f"{register}=A"
         ]
@@ -94,6 +121,7 @@ class ASMCode():
             (list): List of ASM Instructions.
         """
         instructions = [
+            "// MOVE REG TO MEM",
             f"@{address}",
             f"M={register}"
         ]
@@ -110,7 +138,10 @@ class ASMCode():
         Returns:
             (list): List of ASM Instructions.
         """
-        instructions = [f"@{address}"]
+        instructions = [
+            "// MOVE MEM TO REG",
+            f"@{address}"
+        ]
 
         if register == "M":
             return instructions
@@ -128,6 +159,7 @@ class ASMCode():
             (list): List of ASM instructions.
         """
         pop_instructions = [
+            "// POP FROM STACK",
             "@SP",
             "M=M-1",
             "@SP",
@@ -147,6 +179,7 @@ class ASMCode():
             (list): List of ASM instructions.
         """
         push_instructions = [
+            "// PUSH ON TO STACK",
             "@SP",
             "A=M",
             f"M={register}",
@@ -155,18 +188,58 @@ class ASMCode():
         ]
         return push_instructions
 
-    def add(self):
-        """Generates code for ADD command.
+    def arithmetic_logical_2args(self, command):
+        """Generates code for Arithmetic-Logical 2 Argument commands.
+
+        Supported commands
+        - add, sub, and, or, lt, gt, eq
 
         Returns:
             (list): List of instructions.
         """
-        i1 = self.pop("D")
-        i2 = self.pop("M")
-        i3 = ["D=D+M"]
-        i4 = self.push("D")
+        instructions = [f"// PROCESS COMMAND {command}"]
+        fetch_arg_1 = self.pop("D")
+        fetch_arg_2 = self.pop("M")
+        store_result = self.push("D")
 
-        i1.extend(i2)
-        i1.extend(i3)
-        i1.extend(i4)
-        return i1
+        operations = [] # D=D op M
+
+        if command == "add":
+            operations = ["D=D+M"]
+        elif command == "sub":
+            operations = ["D=D+M"]
+        elif command == "and":
+            operations = ["D=D&M"]
+        elif command == "or":
+            operations = ["D=D|M"]
+
+        instructions.extend(fetch_arg_1)
+        instructions.extend(fetch_arg_2)
+        instructions.extend(operations)
+        instructions.extend(store_result)
+        return instructions
+
+    def arithmetic_logical_1_arg(self, command):
+        """Generates code for Arithmetic-Logical 2 Argument commands.
+
+        Supported commands
+        - add, sub, and, or
+
+        Returns:
+            (list): List of instructions.
+        """
+        instructions = [f"// PROCESS COMMAND {command}"]
+        fetch_arg_1 = self.pop("D")
+        store_result = self.push("D")
+
+        operation = None # D=D op M
+
+        if command == "neg":
+            operation = "D=-D"
+        elif command == "sub":
+            operation = "D=!D"
+
+        instructions.extend(fetch_arg_1)
+        instructions.append(operation)
+        instructions.extend(store_result)
+        return instructions
