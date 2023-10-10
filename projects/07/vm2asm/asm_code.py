@@ -58,15 +58,29 @@ class ASMCode():
             address (address): Address within the memory segment.
 
         Returns:
-            _type_: _description_
+            (list): List of ASM instructions.
         """
         if segment == "constant":
-            instructions = [f"@{address}"]
-            instructions.extend(self.push("A"))
+            instructions = self.load_constant(address, "D")
+            instructions.extend(self.push("D"))
             return instructions
         else:
             sys.stderr.write(f"Unsupported segment {segment}\n")
             return None
+
+    def load_constant(self, constant_value, register):
+        """Loads a constant value in Register.
+
+        Args:
+            constant_value (integer): Value to be loaded in register.
+            register (str): Register name. 
+        """
+
+        instructions = [
+            f"@{constant_value}",
+            f"{register}=A"
+        ]
+        return instructions
 
     def reg_to_mem(self, register, address):
         """Generates instruction for moving the value stored in RAM[mem_addres]
@@ -115,10 +129,10 @@ class ASMCode():
         """
         pop_instructions = [
             "@SP",
-            "A=M",
-            f"{register}=M",
+            "M=M-1",
             "@SP",
-            "M=M-1"
+            "A=M",
+            f"{register}=M"
         ]
         return pop_instructions
 
@@ -145,7 +159,7 @@ class ASMCode():
         """Generates code for ADD command.
 
         Returns:
-            _type_: _description_
+            (list): List of instructions.
         """
         i1 = self.pop("D")
         i2 = self.pop("M")
