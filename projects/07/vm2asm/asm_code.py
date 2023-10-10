@@ -2,10 +2,10 @@ import sys      # For stderr and stdout
 
 
 ARTITHMETIC_LOGICAL_2ARGS = {
-    "add", "sub", "and", "or"
+    "add", "sub", "and", "or", "gt", "lt", "eq"
 }
 
-ARTITHMETIC_LOGICAL_1ARG = {"gt", "lt", "eq"}
+ARTITHMETIC_LOGICAL_1ARG = {"neg", "not"}
 
 PUSH_POP = {"push", "pop"}
 
@@ -199,26 +199,55 @@ class ASMCode():
         fetch_arg_2 = self.pop("M")
         store_result = self.push("D")
 
-        operations = ["APPLY OPERATION"] # D=D op M
+        operations = [] # D=D op M
 
         if command == "add":
             operations = ["D=D+M"]
+
         elif command == "sub":
             operations = ["D=D+M"]
+
         elif command == "and":
             operations = ["D=D&M"]
+
         elif command == "or":
             operations = ["D=D|M"]
+
         elif command == "lt":
-            print("are we her")
-            operations = ["QWER"]
-            # operations = [
-            #     "@SETTRUE",
-            #     "M-D;JEQ",
-            #     "D=0",
-            #     "(SETTRUE)",
-            #     "D=-1"
-            # ]
+            operations = [
+                "@SETTRUE",
+                "M-D;JLT",
+                "D=0",
+                "@JUMP_END",
+                "0;JMP",
+                "(SETTRUE)",
+                "D=-1",
+                "(JUMP_END)"
+            ]
+
+        elif command == "eq":
+            operations = [
+                "@SETTRUE",
+                "M-D;JEQ",
+                "D=0",
+                "@JUMP_END",
+                "0;JMP",
+                "(SETTRUE)",
+                "D=-1",
+                "(JUMP_END)"
+            ]
+
+        elif command == "gt":
+            operations = [
+                "@SETTRUE",
+                "M-D;JGT",
+                "D=0",
+                "@JUMP_END",
+                "0;JMP",
+                "(SETTRUE)",
+                "D=-1",
+                "(JUMP_END)"
+            ]
 
         instructions.extend(fetch_arg_1)
         instructions.extend(fetch_arg_2)
@@ -239,14 +268,14 @@ class ASMCode():
         fetch_arg_1 = self.pop("D")
         store_result = self.push("D")
 
-        operation = None # D=D op M
+        operation = [] # D=D op M
 
         if command == "neg":
-            operation = "D=-D"
-        elif command == "sub":
-            operation = "D=!D"
+            operation = ["D=-D"]
+        elif command == "not":
+            operation = ["D=!D"]
 
         instructions.extend(fetch_arg_1)
-        instructions.append(operation)
+        instructions.extend(operation)
         instructions.extend(store_result)
         return instructions
