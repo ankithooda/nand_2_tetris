@@ -94,7 +94,6 @@ class ASMCode():
             instructions.extend(self.pop("D"))
             return instructions
 
-
     def load_constant(self, constant_value, register):
         """Loads a constant value in Register.
 
@@ -128,7 +127,6 @@ class ASMCode():
         ]
         return instructions
 
-
     def mem_to_reg(self, address, register):
         """Generated ASM instructions from RAM[address] to <register>.
 
@@ -149,7 +147,6 @@ class ASMCode():
         else:
             return instructions.append(f"{register}=M")
 
-
     def pop(self, register):
         """Generates ASM code for popping a value from stack and storing it in a register.
 
@@ -168,7 +165,6 @@ class ASMCode():
             f"{register}=M"
         ]
         return pop_instructions
-
 
     def push(self, register):
         """Generates ASM code for popping a value from stack and storing it in a register.
@@ -203,7 +199,7 @@ class ASMCode():
         fetch_arg_2 = self.pop("M")
         store_result = self.push("D")
 
-        operations = [] # D=D op M
+        operations = ["APPLY OPERATION"] # D=D op M
 
         if command == "add":
             operations = ["D=D+M"]
@@ -213,6 +209,16 @@ class ASMCode():
             operations = ["D=D&M"]
         elif command == "or":
             operations = ["D=D|M"]
+        elif command == "lt":
+            print("are we her")
+            operations = ["QWER"]
+            # operations = [
+            #     "@SETTRUE",
+            #     "M-D;JEQ",
+            #     "D=0",
+            #     "(SETTRUE)",
+            #     "D=-1"
+            # ]
 
         instructions.extend(fetch_arg_1)
         instructions.extend(fetch_arg_2)
