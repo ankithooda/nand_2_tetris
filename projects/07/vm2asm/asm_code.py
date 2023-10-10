@@ -2,7 +2,7 @@ import sys      # For stderr and stdout
 
 
 ARTITHMETIC_LOGICAL_2ARGS = {
-    "push", "pop", "add", "sub", "and", "or"
+    "add", "sub", "and", "or"
 }
 
 ARTITHMETIC_LOGICAL_1ARG = {"gt", "lt", "eq"}
@@ -57,7 +57,7 @@ class ASMCode():
             elif command == "push":
                 return self.handle_push(args[0], args[1])
             elif command == "pop":
-                return self.handle_push(args[0], args[1])    
+                return self.handle_pop(args[0], args[1])    
         else:
             raise ASMCodeGenException(f"Unknown command {command}")
 
@@ -88,6 +88,7 @@ class ASMCode():
         Returns:
             (list): List of ASM instructions.
         """
+        print(segment, address)
         if segment == "constant":
             instructions = self.load_constant(address, "D")
             instructions.extend(self.pop("D"))
