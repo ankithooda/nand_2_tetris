@@ -96,12 +96,13 @@ class VM2ASM():
                 command = tokens[0]
                 args = tokens[1:]
                 code = self.asm_code.generate(command, args)
+                # sys.stdout.write(f"DEBUG - {code}")
 
                 if code is not None:
-                    self.generated_code.append(code)
+                    self.generated_code.extend(code)
                 else:
                     self.error_found = True
-                    sys.stderr.write(f"Can not generated code for command {line}")
+                    sys.stderr.write(f"Can not generated code for command {line}\n")
 
 
 def print_help():
