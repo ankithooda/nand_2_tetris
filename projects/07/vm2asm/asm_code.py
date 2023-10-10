@@ -49,9 +49,6 @@ class ASMCode():
         else:
             return None
 
-    def _add_newline(self, instructions):
-        return list(map(lambda x: x+"\n", instructions))
-
     def handle_push(self, segment, address):
         """Generates code for push command.
         push command pushes the value stored in segment[address] in the stack.
@@ -66,7 +63,7 @@ class ASMCode():
         if segment == "constant":
             instructions = [f"@{address}"]
             instructions.extend(self.push("A"))
-            return self._add_newline(instructions)
+            return instructions
         else:
             sys.stderr.write(f"Unsupported segment {segment}\n")
             return None
