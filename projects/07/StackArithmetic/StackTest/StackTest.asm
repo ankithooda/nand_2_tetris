@@ -442,7 +442,7 @@ D=M
 M=M-1
 @SP
 A=M
-D=D+M
+D=M+D
 // PUSH ON TO STACK
 @SP
 A=M
@@ -470,7 +470,7 @@ D=M
 M=M-1
 @SP
 A=M
-D=D-M
+D=M-D
 // PUSH ON TO STACK
 @SP
 A=M
@@ -503,7 +503,7 @@ D=M
 M=M-1
 @SP
 A=M
-D=D&M
+D=M&D
 // PUSH ON TO STACK
 @SP
 A=M
@@ -531,7 +531,7 @@ D=M
 M=M-1
 @SP
 A=M
-D=D|M
+D=M|D
 // PUSH ON TO STACK
 @SP
 A=M

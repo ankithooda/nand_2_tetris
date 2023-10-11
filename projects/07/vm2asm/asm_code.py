@@ -223,16 +223,16 @@ class ASMCode():
         operations = [] # D=D op M
 
         if command == "add":
-            operations = ["D=D+M"]
+            operations = ["D=M+D"]
 
         elif command == "sub":
-            operations = ["D=D-M"]
+            operations = ["D=M-D"]
 
         elif command == "and":
-            operations = ["D=D&M"]
+            operations = ["D=M&D"]
 
         elif command == "or":
-            operations = ["D=D|M"]
+            operations = ["D=M|D"]
 
         elif command == "lt":
             settrue_label = f"SETTRUE_{self.get_label()}"
