@@ -32,6 +32,20 @@ class ASMCode():
     """Class implementing the code generation logic.
     """
 
+    def __init__(self):
+        self.label_count = 0
+
+    def get_label(self):
+        """Returns a label which can be used for 
+        implementing jumps.
+
+        Returns:
+            str: Label
+        """
+        label = str(self.label_count)
+        self.label_count = self.label_count
+        return label
+
     def generate(self, command, args):
         """Returns the Assembly code for a given VM command.
 
@@ -161,9 +175,13 @@ class ASMCode():
             "@SP",
             "M=M-1",
             "@SP",
-            "A=M",
-            f"{register}=M"
+            "A=M",         # This should the set the value in M.
         ]
+
+        # Assign value in M to another register.
+        if register != "M":
+            pop_instructions.append(f"{register}=M")
+
         return pop_instructions
 
     def push(self, register):
@@ -178,11 +196,14 @@ class ASMCode():
         push_instructions = [
             "// PUSH ON TO STACK",
             "@SP",
-            "A=M",
-            f"M={register}",
+            "A=M",          # This puts the value in Register M
+            "//",
             "@SP",
             "M=M+1"
         ]
+        if register != "M":
+            push_instructions[3] = f"M={register}"
+
         return push_instructions
 
     def arithmetic_logical_2args(self, command):
@@ -214,39 +235,51 @@ class ASMCode():
             operations = ["D=D|M"]
 
         elif command == "lt":
+            settrue_label = f"SETTRUE_{self.get_label()}"
+            jump_end_label = f"JUMP_END_{self.get_label()}"
+
             operations = [
-                "@SETTRUE",
-                "M-D;JLT",
+                "D=M-D",
+                f"@{settrue_label}",
+                "D;JLT",
                 "D=0",
-                "@JUMP_END",
+                f"@{jump_end_label}",
                 "0;JMP",
-                "(SETTRUE)",
+                f"({settrue_label})",
                 "D=-1",
-                "(JUMP_END)"
+                f"({jump_end_label})"
             ]
 
         elif command == "eq":
+            settrue_label = f"SETTRUE_{self.get_label()}"
+            jump_end_label = f"JUMP_END_{self.get_label()}"
+
             operations = [
-                "@SETTRUE",
-                "M-D;JEQ",
+                "D=M-D",
+                f"@{settrue_label}",
+                "D;JEQ",
                 "D=0",
-                "@JUMP_END",
+                f"@{jump_end_label}",
                 "0;JMP",
-                "(SETTRUE)",
+                f"({settrue_label})",
                 "D=-1",
-                "(JUMP_END)"
+                f"({jump_end_label})"
             ]
 
         elif command == "gt":
+            settrue_label = f"SETTRUE_{self.get_label()}"
+            jump_end_label = f"JUMP_END_{self.get_label()}"
+
             operations = [
-                "@SETTRUE",
-                "M-D;JGT",
+                "D=M-D",
+                f"@{settrue_label}",
+                "D;JGT",
                 "D=0",
-                "@JUMP_END",
+                f"@{jump_end_label}",
                 "0;JMP",
-                "(SETTRUE)",
+                f"({settrue_label})",
                 "D=-1",
-                "(JUMP_END)"
+                f"({jump_end_label})"
             ]
 
         instructions.extend(fetch_arg_1)
