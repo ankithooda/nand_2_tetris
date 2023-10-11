@@ -1,3 +1,2 @@
 push constant 170
-push constant 370
-lt
+not

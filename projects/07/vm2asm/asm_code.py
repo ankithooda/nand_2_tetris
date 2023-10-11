@@ -43,7 +43,7 @@ class ASMCode():
             str: Label
         """
         label = str(self.label_count)
-        self.label_count = self.label_count
+        self.label_count = self.label_count + 1
         return label
 
     def generate(self, command, args):
@@ -226,7 +226,7 @@ class ASMCode():
             operations = ["D=D+M"]
 
         elif command == "sub":
-            operations = ["D=D+M"]
+            operations = ["D=D-M"]
 
         elif command == "and":
             operations = ["D=D&M"]
