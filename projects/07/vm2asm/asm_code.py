@@ -10,8 +10,8 @@ ARTITHMETIC_LOGICAL_1ARG = {"neg", "not"}
 PUSH_POP = {"push", "pop"}
 
 SEGMENTS = {
-    "lcl": 1,
-    "arg": 2,
+    "local": 1,
+    "argument": 2,
     "this": 3,
     "that": 4,
     "pointer": 3,
@@ -41,8 +41,9 @@ class ASMCode():
     """Class implementing the code generation logic.
     """
 
-    def __init__(self):
+    def __init__(self, vmfile_name):
         self.label_count = 0
+        self.vmfile = vmfile_name
 
     def get_label(self):
         """Returns a label which can be used for 

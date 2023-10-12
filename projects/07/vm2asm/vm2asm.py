@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import os
 import sys
 from asm_code import ASMCode
 from asm_code import ASMCodeGenException
@@ -37,6 +38,12 @@ class VM2ASM():
             sys.stderr.write(f"Exception {any_exception}\n")
             self._clean_up()
             sys.exit(1)
+
+    def setup_codegen(self):
+        """Setups up code generator object.
+        """
+        vmfile_name = os.path.basename(self.infile_path).split(".")[0]
+        self.asm_code = ASMCode(vmfile_name)
 
 
     def setup_outfile(self):
@@ -124,6 +131,7 @@ if __name__ == '__main__':
     else:
         assembler = VM2ASM(sys.argv[1], sys.argv[2])
         assembler.setup_infile()
+        assembler.setup_codegen()
         assembler.parse()
         assembler.write_outfile()
     sys.exit(0)
