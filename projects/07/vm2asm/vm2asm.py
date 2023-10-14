@@ -23,6 +23,7 @@ class VM2ASM():
         self.infile_p = None
         self.outfile_p = None
         self.line_num = 0
+        self.asm_code = None
         self.error_found = False
         self.generated_code = []
 
