@@ -24,7 +24,6 @@ class VM2ASM():
         self.outfile_p = None
         self.line_num = 0
         self.error_found = False
-        self.asm_code = ASMCode()
         self.generated_code = []
 
 

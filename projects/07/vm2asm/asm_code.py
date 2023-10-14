@@ -43,7 +43,7 @@ class ASMCode():
 
     def __init__(self, vmfile_name):
         self.label_count = 0
-        self.vmfile = vmfile_name
+        self.vmfile_name = vmfile_name
 
     def get_label(self):
         """Returns a label which can be used for 
@@ -131,7 +131,7 @@ class ASMCode():
             address (int): address
         """
         address = int(address)
-        mem_address = SEGMENTS.get(segment) + address
+        mem_address = self.resolve_address(segment, address)
         instructions = ["// PUSH FROM SEGMENT"]
         instructions.extend(self.mem_to_reg(mem_address, "D"))
         instructions.extend(self.push("D"))
@@ -145,11 +145,21 @@ class ASMCode():
             address (int): address
         """
         address = int(address)
-        mem_address = SEGMENTS.get(segment) + address
+        mem_address = self.resolve_address(segment, address)
         instructions = ["// POP TO SEGMENT"]
         instructions.extend(self.pop("D"))
         instructions.extend(self.reg_to_mem("D", mem_address))
         return instructions
+
+    def resolve_address(self, segment, address):
+        """Resolves a segment to a physical address.
+
+        Args:
+            segment (str): memory segment
+            address (int): integer address within the segment
+        """
+        if segment == "static":
+            return f"{self.vmfile_name}_{address}"
 
     def load_constant(self, constant_value, register):
         """Loads a constant value in Register.

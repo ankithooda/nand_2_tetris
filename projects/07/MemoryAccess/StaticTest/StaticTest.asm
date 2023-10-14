@@ -33,7 +33,7 @@ M=M-1
 A=M
 D=M
 // MOVE REG TO MEM
-@24
+@StaticTest_8
 M=D
 // POP TO SEGMENT
 // POP FROM STACK
@@ -43,7 +43,7 @@ M=M-1
 A=M
 D=M
 // MOVE REG TO MEM
-@19
+@StaticTest_3
 M=D
 // POP TO SEGMENT
 // POP FROM STACK
@@ -53,11 +53,11 @@ M=M-1
 A=M
 D=M
 // MOVE REG TO MEM
-@17
+@StaticTest_1
 M=D
 // PUSH FROM SEGMENT
 // MOVE MEM TO REG
-@19
+@StaticTest_3
 D=M
 // PUSH ON TO STACK
 @SP
@@ -67,7 +67,7 @@ M=D
 M=M+1
 // PUSH FROM SEGMENT
 // MOVE MEM TO REG
-@17
+@StaticTest_1
 D=M
 // PUSH ON TO STACK
 @SP
@@ -96,7 +96,7 @@ M=D
 M=M+1
 // PUSH FROM SEGMENT
 // MOVE MEM TO REG
-@24
+@StaticTest_8
 D=M
 // PUSH ON TO STACK
 @SP
