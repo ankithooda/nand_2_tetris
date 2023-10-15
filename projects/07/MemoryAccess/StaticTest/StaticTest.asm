@@ -1,4 +1,3 @@
-// LOAD CONSTANT
 @111
 D=A
 // PUSH ON TO STACK
@@ -7,7 +6,6 @@ A=M
 M=D
 @SP
 M=M+1
-// LOAD CONSTANT
 @333
 D=A
 // PUSH ON TO STACK
@@ -16,7 +14,6 @@ A=M
 M=D
 @SP
 M=M+1
-// LOAD CONSTANT
 @888
 D=A
 // PUSH ON TO STACK
@@ -25,38 +22,30 @@ A=M
 M=D
 @SP
 M=M+1
-// POP TO SEGMENT
 // POP FROM STACK
 @SP
 M=M-1
 @SP
 A=M
 D=M
-// MOVE REG TO MEM
 @StaticTest_8
 M=D
-// POP TO SEGMENT
 // POP FROM STACK
 @SP
 M=M-1
 @SP
 A=M
 D=M
-// MOVE REG TO MEM
 @StaticTest_3
 M=D
-// POP TO SEGMENT
 // POP FROM STACK
 @SP
 M=M-1
 @SP
 A=M
 D=M
-// MOVE REG TO MEM
 @StaticTest_1
 M=D
-// PUSH FROM SEGMENT
-// MOVE MEM TO REG
 @StaticTest_3
 D=M
 // PUSH ON TO STACK
@@ -65,8 +54,6 @@ A=M
 M=D
 @SP
 M=M+1
-// PUSH FROM SEGMENT
-// MOVE MEM TO REG
 @StaticTest_1
 D=M
 // PUSH ON TO STACK
@@ -94,8 +81,6 @@ A=M
 M=D
 @SP
 M=M+1
-// PUSH FROM SEGMENT
-// MOVE MEM TO REG
 @StaticTest_8
 D=M
 // PUSH ON TO STACK

@@ -107,7 +107,8 @@ class ASMCode():
         else:
             instructions = self.load_actual_address(segment, index)
             instructions.append("D=M")
-            instructions.append(self.push("D"))
+            instructions.extend(self.push("D"))
+            return instructions
 
     def handle_pop(self, segment, index):
         """Generates code for push command.
@@ -121,8 +122,9 @@ class ASMCode():
             (list): List of ASM instructions.
         """
         instructions = self.pop("D")
-        instructions = self.load_actual_address(segment, index)
+        instructions.extend(self.load_actual_address(segment, index))
         instructions.append("M=D")
+        return instructions
 
     def load_actual_address(self, segment, index):
         """Generates instructions to load the actual address for a given segment and index.
