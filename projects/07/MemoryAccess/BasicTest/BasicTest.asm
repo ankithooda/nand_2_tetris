@@ -38,7 +38,7 @@ A=M
 M=D
 @SP
 M=M+1
-@ARGS
+@ARG
 D=M
 @2
 A=A+D
@@ -54,7 +54,7 @@ D=M
 @R13
 A=M
 M=D
-@ARGS
+@ARG
 D=M
 @1
 A=A+D
@@ -204,7 +204,7 @@ A=M
 M=D
 @SP
 M=M+1
-@ARGS
+@ARG
 D=M
 @1
 A=A+D

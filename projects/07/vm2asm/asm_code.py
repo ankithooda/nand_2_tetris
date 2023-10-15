@@ -8,7 +8,7 @@ PUSH_POP = {"push", "pop"}
 
 DYNAMIC_ADDRESS_SEGMENTS = {
     "local": "LCL",
-    "argument": "ARGS",
+    "argument": "ARG",
     "this": "THIS",
     "that": "THAT",
 }
