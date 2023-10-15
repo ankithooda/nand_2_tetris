@@ -82,9 +82,11 @@ class ASMCode():
             elif not args[1].isnumeric():
                 raise ASMCodeGenException(f"{args[1]} is not a valid address\n")
             elif command == "push":
-                return self.handle_push(args[0], args[1])
+                index = int(args[1])
+                return self.handle_push(args[0], index)
             elif command == "pop":
-                return self.handle_pop(args[0], args[1])    
+                index = int(args[1])
+                return self.handle_pop(args[0], index)    
         else:
             raise ASMCodeGenException(f"Unknown command {command}")
 
@@ -121,9 +123,18 @@ class ASMCode():
         Returns:
             (list): List of ASM instructions.
         """
-        instructions = self.pop("D")
-        instructions.extend(self.load_actual_address(segment, index))
-        instructions.append("M=D")
+        instructions = self.load_actual_address(segment, index)
+        instructions.extend([
+            "D=A",
+            "@R13",
+            "M=D"
+        ])
+        instructions.extend(self.pop("D"))
+        instructions.extend([
+            "@R13",
+            "A=M",
+            "M=D"
+        ])
         return instructions
 
     def load_actual_address(self, segment, index):
@@ -144,14 +155,14 @@ class ASMCode():
             return instructions
 
         if segment == "temp":
-            address = FIXED_ADDRESS_SEGMENTS.get("temp")+index
+            address = FIXED_ADDRESS_SEGMENTS.get("temp") + index
             instructions = [
                 f"@{address}"
             ]
             return instructions
 
         if segment == "pointer":
-            address = FIXED_ADDRESS_SEGMENTS.get("pointer")+index
+            address = FIXED_ADDRESS_SEGMENTS.get("pointer") + index
             instructions = [
                 f"@{address}"
             ]
