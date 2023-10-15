@@ -1,4 +1,3 @@
-// LOAD CONSTANT
 @7
 D=A
 // PUSH ON TO STACK
@@ -7,7 +6,6 @@ A=M
 M=D
 @SP
 M=M+1
-// LOAD CONSTANT
 @8
 D=A
 // PUSH ON TO STACK
@@ -28,8 +26,7 @@ D=M
 M=M-1
 @SP
 A=M
-M=M
-D=D+M
+D=M+D
 // PUSH ON TO STACK
 @SP
 A=M
