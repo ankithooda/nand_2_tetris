@@ -88,7 +88,7 @@ class ASMCode():
         else:
             raise ASMCodeGenException(f"Unknown command {command}")
 
-    def handle_push(self, segment, address):
+    def handle_push(self, segment, index):
         """Generates code for push command.
         push command pushes the value stored in segment[address] in the stack.
 
@@ -100,12 +100,29 @@ class ASMCode():
             (list): List of ASM instructions.
         """
         if segment == "constant":
-            instructions = self.load_constant(address, "D")
+            instructions = self.load_constant(index, "D")
             instructions.extend(self.push("D"))
             return instructions
 
         else:
-            return self.handle_push_from_segments(segment, address)
+            instructions = self.load_actual_address(segment, index)
+            instructions.append("D=M")
+            instructions.append(self.push("D"))
+
+    def handle_pop(self, segment, index):
+        """Generates code for push command.
+        push command pushes the value stored in segment[address] in the stack.
+
+        Args:
+            segment (str): Memory segment.
+            address (address): Address within the memory segment.
+
+        Returns:
+            (list): List of ASM instructions.
+        """
+        instructions = self.pop("D")
+        instructions = self.load_actual_address(segment, index)
+        instructions.append("M=D")
 
     def load_actual_address(self, segment, index):
         """Generates instructions to load the actual address for a given segment and index.
@@ -122,75 +139,30 @@ class ASMCode():
             instructions = [
                 f"@{self.vmfile_name}_{index}"
             ]
-        elif segment == "temp":
-            instructions = [
-                f"@{FIXED_ADDRESS_SEGMENTS.get("temp")+index}"
-            ]
-        elif segment == "pointer":
-            instructions = [
-                
-            ]
-
-
-
-
-
-
-    def handle_pop(self, segment, address):
-        """Generates code for push command.
-        push command pushes the value stored in segment[address] in the stack.
-
-        Args:
-            segment (str): Memory segment.
-            address (address): Address within the memory segment.
-
-        Returns:
-            (list): List of ASM instructions.
-        """
-        if segment == "constant":
-            instructions = self.load_constant(address, "D")
-            instructions.extend(self.pop("D"))
             return instructions
-        else:
-            return self.handle_pop_to_segments(segment, address)
 
-    def handle_push_from_segments(self, segment, address):
-        """Push from a segment to stack.
+        if segment == "temp":
+            address = FIXED_ADDRESS_SEGMENTS.get("temp")+index
+            instructions = [
+                f"@{address}"
+            ]
+            return instructions
 
-        Args:
-            segment (str): segment
-            address (int): address
-        """
-        address = int(address)
-        mem_address = self.resolve_address(segment, address)
-        instructions = ["// PUSH FROM SEGMENT"]
-        instructions.extend(self.mem_to_reg(mem_address, "D"))
-        instructions.extend(self.push("D"))
+        if segment == "pointer":
+            address = FIXED_ADDRESS_SEGMENTS.get("pointer")+index
+            instructions = [
+                f"@{address}"
+            ]
+            return instructions
+            
+        if DYNAMIC_ADDRESS_SEGMENTS.get(segment) is not None:
+            segment_symbol = DYNAMIC_ADDRESS_SEGMENTS.get(segment)
+            instructions = [
+                f"@{segment_symbol}",
+                "A=M"
+            ]
+            return instructions
         return instructions
-
-    def handle_pop_to_segments(self, segment, address):
-        """Pop value from stack to a segment
-
-        Args:
-            segment (str): segment
-            address (int): address
-        """
-        address = int(address)
-        mem_address = self.resolve_address(segment, address)
-        instructions = ["// POP TO SEGMENT"]
-        instructions.extend(self.pop("D"))
-        instructions.extend(self.reg_to_mem("D", mem_address))
-        return instructions
-
-    def resolve_address(self, segment, address):
-        """Resolves a segment to a physical address.
-
-        Args:
-            segment (str): memory segment
-            address (int): integer address within the segment
-        """
-        if segment == "static":
-            return f"{self.vmfile_name}_{address}"
 
     def load_constant(self, constant_value, register):
         """Loads a constant value in Register.
@@ -199,47 +171,10 @@ class ASMCode():
             constant_value (integer): Value to be loaded in register.
             register (str): Register name. 
         """
-
-
-
-    def reg_to_mem(self, register, address):
-        """Generates instruction for moving the value stored in register
-        to RAM[mem_addres]
-        Does not work for register M.
-
-        Args:
-            register (str): Register which holds the value.
-            address (int): Memory address
-        
-        Returns:
-            (list): List of ASM Instructions.
-        """
-        instructions = [
-            "// MOVE REG TO MEM",
-            f"@{address}",
-            f"M={register}"
+        return [
+            f"@{constant_value}",
+            f"{register}=A"
         ]
-        return instructions
-
-    def mem_to_reg(self, address, register):
-        """Generated ASM instructions from RAM[address] to <register>.
-
-        Args:
-            address (int): Memory address
-            register (str): Destination register.
-
-        Returns:
-            (list): List of ASM Instructions.
-        """
-        instructions = [
-            "// MOVE MEM TO REG",
-            f"@{address}"
-        ]
-
-        if register != "M":
-            instructions.append(f"{register}=M")
-        
-        return instructions
 
     def pop(self, register):
         """Generates ASM code for popping a value from stack and storing it in a register.
