@@ -159,7 +159,9 @@ class ASMCode():
             segment_symbol = DYNAMIC_ADDRESS_SEGMENTS.get(segment)
             instructions = [
                 f"@{segment_symbol}",
-                "A=M"
+                "D=M",
+                f"@{index}",
+                "A=A+D"
             ]
             return instructions
         return instructions
