@@ -1,6 +1,3 @@
-import sys      # For stderr and stdout
-
-
 ARTITHMETIC_LOGICAL_2ARGS = {
     "add", "sub", "and", "or", "gt", "lt", "eq"
 }
@@ -9,16 +6,20 @@ ARTITHMETIC_LOGICAL_1ARG = {"neg", "not"}
 
 PUSH_POP = {"push", "pop"}
 
-SEGMENTS = {
-    "local": 1,
-    "argument": 2,
-    "this": 3,
-    "that": 4,
+DYNAMIC_ADDRESS_SEGMENTS = {
+    "local": "LCL",
+    "argument": "ARGS",
+    "this": "THIS",
+    "that": "THAT",
+}
+
+FIXED_ADDRESS_SEGMENTS = {
     "pointer": 3,
     "temp": 5,
     "static": 16,
     "constant": 0
 }
+
 
 class ASMCodeGenException(Exception):
     """Exception class for raising all sorts of error occurring during the 
@@ -52,7 +53,7 @@ class ASMCode():
         Returns:
             str: Label
         """
-        label = str(self.label_count)
+        label = f"{self.vmfile_name}_JUMP_{self.label_count}"
         self.label_count = self.label_count + 1
         return label
 
@@ -76,7 +77,7 @@ class ASMCode():
         elif command in PUSH_POP:
             if len(args) != 2:
                 raise ASMCodeGenException(f"{command} should have exactly 2 arguments\n")
-            elif SEGMENTS.get(args[0]) is None:
+            elif FIXED_ADDRESS_SEGMENTS.get(args[0]) is None and DYNAMIC_ADDRESS_SEGMENTS.get(args[0]) is None:
                 raise ASMCodeGenException(f"{args[0]} is not a valid memory segment\n")
             elif not args[1].isnumeric():
                 raise ASMCodeGenException(f"{args[1]} is not a valid address\n")
@@ -102,8 +103,38 @@ class ASMCode():
             instructions = self.load_constant(address, "D")
             instructions.extend(self.push("D"))
             return instructions
+
         else:
             return self.handle_push_from_segments(segment, address)
+
+    def load_actual_address(self, segment, index):
+        """Generates instructions to load the actual address for a given segment and index.
+
+        Args:
+            segment (str): Segment
+            index (int): Index within the segment.
+        
+        Returns:
+            (list): List of ASM instructions.
+        """
+        instructions = []
+        if segment == "static":
+            instructions = [
+                f"@{self.vmfile_name}_{index}"
+            ]
+        elif segment == "temp":
+            instructions = [
+                f"@{FIXED_ADDRESS_SEGMENTS.get("temp")+index}"
+            ]
+        elif segment == "pointer":
+            instructions = [
+                
+            ]
+
+
+
+
+
 
     def handle_pop(self, segment, address):
         """Generates code for push command.
@@ -169,12 +200,7 @@ class ASMCode():
             register (str): Register name. 
         """
 
-        instructions = [
-            "// LOAD CONSTANT",
-            f"@{constant_value}",
-            f"{register}=A"
-        ]
-        return instructions
+
 
     def reg_to_mem(self, register, address):
         """Generates instruction for moving the value stored in register
@@ -214,7 +240,6 @@ class ASMCode():
             instructions.append(f"{register}=M")
         
         return instructions
-
 
     def pop(self, register):
         """Generates ASM code for popping a value from stack and storing it in a register.
