@@ -1,0 +1,310 @@
+@ARG
+D=M
+@1
+A=A+D
+D=M
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@4
+D=A
+@R13
+M=D
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+@R13
+A=M
+M=D
+@0
+D=A
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@THAT
+D=M
+@0
+A=A+D
+D=A
+@R13
+M=D
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+@R13
+A=M
+M=D
+@1
+D=A
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@THAT
+D=M
+@1
+A=A+D
+D=A
+@R13
+M=D
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+@R13
+A=M
+M=D
+@ARG
+D=M
+@0
+A=A+D
+D=M
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@2
+D=A
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// PROCESS COMMAND sub
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M-D
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@ARG
+D=M
+@0
+A=A+D
+D=A
+@R13
+M=D
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+@R13
+A=M
+M=D
+(MAIN_LOOP_START)
+@ARG
+D=M
+@0
+A=A+D
+D=M
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+D;JNE
+@END_PROGRAM
+0;JMP
+(COMPUTE_ELEMENT)
+@THAT
+D=M
+@0
+A=A+D
+D=M
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@THAT
+D=M
+@1
+A=A+D
+D=M
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// PROCESS COMMAND add
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M+D
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@THAT
+D=M
+@2
+A=A+D
+D=A
+@R13
+M=D
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+@R13
+A=M
+M=D
+@4
+D=M
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@1
+D=A
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// PROCESS COMMAND add
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M+D
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@4
+D=A
+@R13
+M=D
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+@R13
+A=M
+M=D
+@ARG
+D=M
+@0
+A=A+D
+D=M
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@1
+D=A
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// PROCESS COMMAND sub
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M-D
+// PUSH ON TO STACK
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@ARG
+D=M
+@0
+A=A+D
+D=A
+@R13
+M=D
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+@R13
+A=M
+M=D
+@MAIN_LOOP_START
+0;JMP
+(END_PROGRAM)
