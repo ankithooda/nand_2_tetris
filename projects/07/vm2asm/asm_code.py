@@ -6,6 +6,14 @@ ARTITHMETIC_LOGICAL_1ARG = {"neg", "not"}
 
 PUSH_POP = {"push", "pop"}
 
+BRANCHING_COMMANDS = {
+    "label", "goto", "if-goto"
+}
+
+FUNCTION_COMMANDS = {
+    "function", "call", "return"
+}
+
 DYNAMIC_ADDRESS_SEGMENTS = {
     "local": "LCL",
     "argument": "ARG",
@@ -19,7 +27,6 @@ FIXED_ADDRESS_SEGMENTS = {
     "static": 16,
     "constant": 0
 }
-
 
 class ASMCodeGenException(Exception):
     """Exception class for raising all sorts of error occurring during the 
@@ -86,9 +93,36 @@ class ASMCode():
                 return self.handle_push(args[0], index)
             elif command == "pop":
                 index = int(args[1])
-                return self.handle_pop(args[0], index)    
+                return self.handle_pop(args[0], index)
+        elif command in BRANCHING_COMMANDS:
+            if len(args) != 1:
+                raise ASMCodeGenException(f"{command} should have exactly 1 argument\n")
+            elif command == "label":
+                return self.handle_label(args[0])
+            elif command == "goto":
+                return self.handle_goto(args[0])
+            elif command == "if-goto":
+                return self.handle_if_goto(args[0])
+
+        elif command in FUNCTION_COMMANDS:
+            if command == "function":
+                if len(args) != 2:
+                    raise ASMCodeGenException(f"{command} should have exactly 2 arguments\n")
+                elif not args[1].isnumeric():
+                    raise ASMCodeGenException(f"{command} should have a valid variable count\n")
+                else:
+                    return self.handle_function(args[0], args[1])
+            elif command == "call":
+                if len(args) != 2:
+                    raise ASMCodeGenException(f"{command} should have exactly 2 arguments\n")
+                elif not args[1].isnumeric():
+                    raise ASMCodeGenException(f"{command} should have a valid argument count\n")
+                else:
+                    return self.handle_function(args[0], args[1])
+            elif command == "return":
+                return self.handle_return()            
         else:
-            raise ASMCodeGenException(f"Unknown command {command}")
+            raise ASMCodeGenException(f"Unknown command {command} {args}")
 
     def handle_push(self, segment, index):
         """Generates code for push command.
@@ -342,3 +376,21 @@ class ASMCode():
         instructions.extend(operation)
         instructions.extend(store_result)
         return instructions
+
+    def handle_label(self, label):
+        return []
+
+    def handle_goto(self, label):
+        return []
+
+    def handle_if_goto(self, label):
+        return []
+
+    def handle_function(self, function_name, var_count):
+        return []
+
+    def handle_call(self, function_name, arg_count):
+        return []
+
+    def handle_return(self):
+        return []
