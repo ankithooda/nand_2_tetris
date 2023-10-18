@@ -378,13 +378,48 @@ class ASMCode():
         return instructions
 
     def handle_label(self, label):
-        return []
+        """Generate instructions for VM command `label`
+
+        Args:
+            label (str): Label string
+
+        Returns:
+            (list): List of instructions.
+        """
+        instructions = [
+            f"({label})"
+        ]
+        return instructions
 
     def handle_goto(self, label):
-        return []
+        """Generate instructions for VM command `goto`
+
+        Args:
+            label (str): Label string
+
+        Returns:
+            (list): List of instructions.
+        """
+        instructions = [
+            f"@{label}",
+            "0;JMP"
+        ]
+        return instructions
 
     def handle_if_goto(self, label):
-        return []
+        """Generate instructions for VM command `if-goto`
+
+        Args:
+            label (str): Label string
+
+        Returns:
+            (list): List of instructions.
+        """
+        instructions = self.pop("D")
+        instructions.extend([
+            "D;JNE"
+        ])
+        return instructions
 
     def handle_function(self, function_name, var_count):
         return []

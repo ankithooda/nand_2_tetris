@@ -22,6 +22,7 @@ D=M
 @R13
 A=M
 M=D
+(LOOP_START)
 @ARG
 D=M
 @0
@@ -144,6 +145,13 @@ A=M
 M=D
 @SP
 M=M+1
+// POP FROM STACK
+@SP
+M=M-1
+@SP
+A=M
+D=M
+D;JNE
 @LCL
 D=M
 @0
