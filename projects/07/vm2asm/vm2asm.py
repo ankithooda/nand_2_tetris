@@ -95,6 +95,12 @@ class VM2ASM():
         """
         self.setup_infile()
         for line in self.infile_p.readlines():
+            # Remove inline comments
+            comment_start = line.find("//")
+
+            if comment_start != -1:
+                line = line[0:comment_start]
+
             line = line.strip()
             self.line_num = self.line_num + 1
             if len(line) == 0 or line[0:2] == "//":
