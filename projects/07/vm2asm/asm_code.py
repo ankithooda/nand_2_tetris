@@ -415,10 +415,13 @@ class ASMCode():
         Returns:
             (list): List of instructions.
         """
-        instructions = self.pop("D")
+        instructions = ["// IF-GOTO"]
+        instructions.extend(self.pop("D"))
         instructions.extend([
+            f"@{label}",
             "D;JNE"
         ])
+        instructions.extend(["// END IF-GOTO"])
         return instructions
 
     def handle_function(self, function_name, var_count):

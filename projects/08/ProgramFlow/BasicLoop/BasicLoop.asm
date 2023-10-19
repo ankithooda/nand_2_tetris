@@ -145,13 +145,16 @@ A=M
 M=D
 @SP
 M=M+1
+// IF-GOTO
 // POP FROM STACK
 @SP
 M=M-1
 @SP
 A=M
 D=M
+@LOOP_START
 D;JNE
+// END IF-GOTO
 @LCL
 D=M
 @0
