@@ -425,7 +425,20 @@ class ASMCode():
         return instructions
 
     def handle_function(self, function_name, var_count):
-        return []
+        """Generates instructions for function definition.
+
+        Args:
+            function_name (str): Function name.
+            var_count (int): Count of local variables.
+
+        Returns:
+            _type_: _description_
+        """
+        instructions = [
+            f"{function_name}",
+        ]
+        instructions.extend(["push 0"] * var_count)
+        return instructions
 
     def handle_call(self, function_name, arg_count):
         return []
